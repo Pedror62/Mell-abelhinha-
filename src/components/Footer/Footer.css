@@ -1,0 +1,168 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* CONTÊINER PRINCIPAL */
+.footer-container {
+  width: 100%;
+  background: #111827; /* Tom escuro e moderno */
+  color: #F9FAFB;
+  padding: 64px 0 32px 0;
+  font-family: 'Inter', sans-serif;
+  box-sizing: border-box;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  box-sizing: border-box;
+}
+
+/* GRID PRINCIPAL DE 4 COLUNAS */
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 48px;
+}
+
+.footer-col {
+  display: flex;
+  flex-direction: column;
+}
+
+/* COLUNA 1: BRAND (LOGO E DESCRIÇÃO) */
+.brand-col .logo-img {
+  max-width: 140px;
+  height: auto;
+  margin-bottom: 16px;
+}
+
+.footer-description {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #9CA3AF;
+  margin: 0;
+}
+
+/* TÍTULOS DAS COLUNAS */
+.footer-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin: 0 0 20px 0;
+  letter-spacing: 0.5px;
+}
+
+/* LISTAS DE LINKS */
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer-links li a {
+  color: #D1D5DB;
+  font-size: 14px;
+  font-weight: 400;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.2s ease;
+}
+
+.footer-links li a:hover {
+  color: #00A1DC; /* Destaque na cor principal ao passar o mouse */
+}
+
+.link-icon {
+  font-size: 15px;
+  color: #00A1DC;
+}
+
+/* REDES SOCIAIS (BADGES) */
+.social-brands {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.social-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #E5E7EB;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  width: fit-content;
+  transition: all 0.2s ease;
+}
+
+.social-badge:hover {
+  background: #00A1DC;
+  border-color: #00A1DC;
+  color: #FFFFFF;
+  transform: translateY(-2px);
+}
+
+/* RODAPÉ INFERIOR (COPYRIGHT) */
+.footer-bottom {
+  border-top: 1px solid #1F2937;
+  padding-top: 24px;
+  text-align: center;
+}
+
+.footer-bottom p {
+  font-size: 13px;
+  color: #6B7280;
+  margin: 0;
+}
+
+/* ==========================================
+   RESPONSIVIDADE (TABLETS E CELULARES)
+   ========================================== */
+
+@media (max-width: 992px) {
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+}
+
+@media (max-width: 576px) {
+  .footer-container {
+    padding: 40px 0 24px 0;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .brand-col .logo-img {
+    max-width: 120px;
+  }
+
+  .social-brands {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}
+/* Destaque sutil para o link do boleto */
+.link-destaque-boleto {
+  color: #00e676 !important; /* Ou a cor primária de destaque da sua marca */
+  font-weight: bold;
+}
+
+.link-destaque-boleto:hover {
+  text-decoration: underline;
+  opacity: 0.9;
+}

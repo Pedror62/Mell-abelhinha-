@@ -1,0 +1,662 @@
+/* FloatingWidget.css - Estilos básicos */
+
+.floating-widget-container {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 9999;
+}
+
+.floating-button {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #1a56db;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.floating-button:hover {
+  transform: scale(1.05);
+  background: #1e40af;
+}
+
+.floating-button.active {
+  background: #dc2626;
+  transform: rotate(90deg);
+}
+
+.widget-popup {
+  position: absolute;
+  bottom: 80px;
+  right: 0;
+  width: 320px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.widget-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: #1a56db;
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.widget-close-x {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.widget-options {
+  padding: 8px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.widget-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  width: 100%;
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  color: #1e293b;
+}
+
+.widget-card:hover {
+  background: #f1f5f9;
+}
+
+.widget-card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #e0f2fe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: #0284c7;
+  flex-shrink: 0;
+}
+
+.widget-card-text {
+  text-align: left;
+}
+
+.widget-card-text strong {
+  display: block;
+  font-size: 14px;
+  color: #0f172a;
+}
+
+.widget-card-text p {
+  margin: 0;
+  font-size: 12px;
+  color: #64748b;
+}
+
+/* Modais */
+.indique-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10001;
+  padding: 20px;
+}
+
+.indique-modal-card {
+  background: white;
+  border-radius: 16px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.indique-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 12px;
+}
+
+.header-title-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.modal-header-icon {
+  font-size: 24px;
+  color: #1a56db;
+}
+
+.indique-modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #1e293b;
+}
+
+.form-section {
+  margin-bottom: 20px;
+}
+
+.form-section h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 10px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.form-grid input {
+  padding: 10px 14px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-grid input:focus {
+  border-color: #1a56db;
+}
+
+.submit-indique-btn {
+  width: 100%;
+  padding: 12px;
+  background: #1a56db;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background 0.2s;
+}
+
+.submit-indique-btn:hover {
+  background: #1e40af;
+}
+
+/* Responsivo */
+@media (max-width: 480px) {
+  .widget-popup {
+    width: 280px;
+    right: 0;
+  }
+  
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .indique-modal-card {
+    padding: 16px;
+  }
+  
+  .floating-button {
+    width: 50px;
+    height: 50px;
+    font-size: 22px;
+  }
+}
+/* FloatingWidget.css - Estilos com animações constantes */
+
+.floating-widget-container {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 9999;
+}
+
+/* ✅ BOTÃO PRINCIPAL COM ANIMAÇÃO CONSTANTE */
+.floating-button {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1a56db, #1e40af);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(26, 86, 219, 0.4);
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  position: relative;
+}
+
+/* ✅ ANIMAÇÃO DE PULSAR CONSTANTE */
+.floating-button.pulsar {
+  animation: pulsar 2s ease-in-out infinite;
+}
+
+@keyframes pulsar {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 4px 20px rgba(26, 86, 219, 0.4);
+  }
+  25% {
+    transform: scale(1.05);
+    box-shadow: 0 4px 30px rgba(26, 86, 219, 0.5);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 4px 40px rgba(26, 86, 219, 0.6);
+  }
+  75% {
+    transform: scale(1.05);
+    box-shadow: 0 4px 30px rgba(26, 86, 219, 0.5);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 4px 20px rgba(26, 86, 219, 0.4);
+  }
+}
+
+/* ✅ ONDA CONSTANTE AO REDOR DO BOTÃO */
+.floating-button.pulsar::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  border-radius: 50%;
+  border: 3px solid rgba(26, 86, 219, 0.3);
+  animation: onda 2s ease-in-out infinite;
+}
+
+@keyframes onda {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.4;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+/* ✅ SEGUNDA ONDA COM DELAY PARA EFEITO CONTÍNUO */
+.floating-button.pulsar::after {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  border-radius: 50%;
+  border: 3px solid rgba(26, 86, 219, 0.2);
+  animation: onda-delay 2s ease-in-out infinite;
+}
+
+@keyframes onda-delay {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+.floating-button:hover {
+  transform: scale(1.08) !important;
+  background: linear-gradient(135deg, #1e40af, #1a56db);
+}
+
+.floating-button.active {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  transform: rotate(90deg);
+  animation: none !important; /* Para a animação quando ativo */
+}
+
+.floating-button.active::before,
+.floating-button.active::after {
+  display: none; /* Remove as ondas quando ativo */
+}
+
+.floating-button.active:hover {
+  background: linear-gradient(135deg, #b91c1c, #dc2626);
+}
+
+/* Widget Popup */
+.widget-popup {
+  position: absolute;
+  bottom: 80px;
+  right: 0;
+  width: 320px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.widget-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #1a56db, #1e40af);
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.widget-close-x {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0 4px;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.widget-close-x:hover {
+  opacity: 1;
+}
+
+.widget-options {
+  padding: 8px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.widget-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  width: 100%;
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  color: #1e293b;
+}
+
+.widget-card:hover {
+  background: #f1f5f9;
+  transform: translateX(4px);
+}
+
+.widget-card:active {
+  transform: scale(0.98);
+}
+
+.widget-card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #e0f2fe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: #0284c7;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.widget-card:hover .widget-card-icon {
+  background: #bae6fd;
+  transform: scale(1.05);
+}
+
+.widget-card-text {
+  text-align: left;
+}
+
+.widget-card-text strong {
+  display: block;
+  font-size: 14px;
+  color: #0f172a;
+}
+
+.widget-card-text p {
+  margin: 0;
+  font-size: 12px;
+  color: #64748b;
+}
+
+/* Modais */
+.indique-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10001;
+  padding: 20px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.indique-modal-card {
+  background: white;
+  border-radius: 16px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.indique-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 12px;
+}
+
+.header-title-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.modal-header-icon {
+  font-size: 24px;
+  color: #1a56db;
+}
+
+.indique-modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #1e293b;
+}
+
+.form-section {
+  margin-bottom: 20px;
+}
+
+.form-section h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.form-grid input {
+  padding: 10px 14px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-grid input:focus {
+  border-color: #1a56db;
+  box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1);
+}
+
+.submit-indique-btn {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #1a56db, #1e40af);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.submit-indique-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(26, 86, 219, 0.3);
+}
+
+.submit-indique-btn:active {
+  transform: scale(0.98);
+}
+
+/* Responsivo */
+@media (max-width: 480px) {
+  .widget-popup {
+    width: 280px;
+    right: 0;
+  }
+  
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .indique-modal-card {
+    padding: 16px;
+  }
+  
+  .floating-button {
+    width: 50px;
+    height: 50px;
+    font-size: 22px;
+  }
+  
+  .floating-widget-container {
+    bottom: 20px;
+    right: 20px;
+  }
+}

@@ -1,0 +1,185 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap');
+
+.ecossistema {
+  width: 100%;
+  max-width: 1920px;
+  height: 798.94px;
+  background: #FFFFFF;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+}
+
+.ecossistema-container {
+  width: 100%;
+  max-width: 1440px;
+  padding: 0 80px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 60px;
+}
+
+/* --- LADO ESQUERDO --- */
+.ecossistema-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 600px;
+}
+
+/* Badge Superior */
+.ecossistema-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border: 1px solid #00A1DC;
+  border-radius: 99px;
+  background: transparent;
+  margin-bottom: 20px;
+}
+
+.check-icon-blue {
+  width: 14px;
+  height: 14px;
+}
+
+.ecossistema-tag span {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  color: #00A1DC;
+}
+
+/* Título */
+.ecossistema-title {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 800;
+  font-size: 38px;
+  line-height: 1.2;
+  color: #FF801E; /* Laranja da frase principal */
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+/* Subtítulo */
+.ecossistema-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  color: #6B7280;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+/* Imagem do Celular */
+.ecossistema-phone-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.ecossistema-phone-img {
+  max-width: 480px;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+/* --- LADO DIREITO (LISTA DE CARDS) --- */
+.ecossistema-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 580px;
+}
+
+.ecossistema-card {
+  width: 100%;
+  background: #FFFFFF;
+  border: 1px solid #FF801E; /* Borda Laranja */
+  border-radius: 16px;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-sizing: border-box;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ecossistema-card:hover {
+  transform: translateX(4px);
+  box-shadow: 0px 6px 16px rgba(255, 128, 30, 0.12);
+}
+
+/* Ícone circular laranja */
+.ecossistema-card-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #FF801E;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ecossistema-card-icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+/* Conteúdo do Card */
+.ecossistema-card-content {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.ecossistema-card-content h3 {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  color: #FF801E; /* Título do card Laranja */
+  margin: 0 0 4px 0;
+}
+
+.ecossistema-card-content p {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 13.5px;
+  line-height: 20px;
+  color: #6B7280;
+  margin: 0;
+}
+
+/* --- RESPONSIVIDADE --- */
+@media (max-width: 1200px) {
+  .ecossistema {
+    height: auto;
+    padding: 60px 0;
+  }
+
+  .ecossistema-container {
+    flex-direction: column;
+    padding: 0 20px;
+  }
+
+  .ecossistema-left, .ecossistema-right {
+    max-width: 100%;
+  }
+
+  .ecossistema-title {
+    font-size: 30px;
+  }
+}

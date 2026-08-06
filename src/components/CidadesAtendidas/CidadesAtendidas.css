@@ -1,0 +1,307 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@700;800&display=swap');
+
+/* SEÇÃO PRINCIPAL */
+.cidades-atendidas {
+  width: 100%;
+  max-width: 1920px;
+  min-height: 550px;
+  background: #FFFFFF;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 56px 0;
+  box-sizing: border-box;
+  margin: 0 auto;
+}
+
+.cidades-container {
+  width: 100%;
+  max-width: 1440px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0 40px;
+  box-sizing: border-box;
+}
+
+/* BADGE SUPERIOR */
+.cidades-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 16px;
+  border: 1px solid #00A1DC;
+  border-radius: 99px;
+  background: #FFFFFF;
+  margin-bottom: 20px;
+}
+
+.cidades-tag span {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  color: #00A1DC;
+}
+
+/* TÍTULO PRINCIPAL */
+.cidades-title {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 800;
+  font-size: 38px;
+  line-height: 1.2;
+  color: #FF801E;
+  margin: 0 0 16px 0;
+}
+
+/* SUBTÍTULO */
+.cidades-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 17px;
+  line-height: 1.6;
+  color: #6B7280;
+  margin: 0 0 36px 0;
+}
+
+/* CARROSSEL WRAPPER */
+.cidades-carousel-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+/* SETAS DO CARROSSEL */
+.carousel-arrow {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid #E5E7EB;
+  background: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  z-index: 2;
+}
+
+.carousel-arrow:hover {
+  background: #F9FAFB;
+  border-color: #00A1DC;
+  transform: scale(1.05);
+}
+
+.carousel-arrow svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* JANELA MÁSCARA (VIEWPORT) */
+/* 4 cards (4x220px) + 3 espaçamentos (3x20px) = 940px */
+.cidades-carousel-viewport {
+  width: 940px;
+  max-width: 100%;
+  overflow: hidden;
+  padding: 10px 0; /* Espaço para o efeito hover/sombra não cortar */
+}
+
+/* TRILHO DE CARDS DESLIZANTE */
+.cidades-cards-track {
+  display: flex;
+  gap: 20px;
+  will-change: transform;
+  transition: transform 0.3s ease-out;
+}
+
+/* CARD DA CIDADE */
+.cidade-card {
+  width: 220px;
+  height: 110px;
+  flex-shrink: 0;
+  background: #FFFFFF;
+  border: 1px solid #FF801E;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-sizing: border-box;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cidade-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0px 8px 16px rgba(255, 128, 30, 0.12);
+}
+
+.cidade-card-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.cidade-card-name {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 800;
+  font-size: 16px;
+  color: #111827;
+}
+
+/* PAGINAÇÃO (DOTS) */
+.cidades-dots {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #D1D5DB;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dot.active {
+  width: 24px;
+  border-radius: 12px;
+  background: #00A1DC;
+}
+
+/* BOTÃO DE AÇÃO */
+.cidades-btn {
+  height: 48px;
+  padding: 0 28px;
+  background: #00A1DC;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-decoration: none;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.cidades-btn:hover {
+  background: #008cc0;
+  transform: translateY(-2px);
+}
+
+.cidades-btn span {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 14.5px;
+  color: #FFFFFF;
+}
+
+.cidades-btn-icon {
+  width: 22px;
+  height: 22px;
+  background: #FFFFFF;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cidades-btn-icon svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* ==========================================
+   MEDIA QUERIES (RESPONSIVIDADE COMPLETA)
+   ========================================== */
+
+/* TABLETS E DESKTOPS PEQUENOS (até 1024px) */
+@media (max-width: 1024px) {
+  .cidades-container {
+    padding: 0 24px;
+  }
+
+  /* Exibe 2 cards por vez (2x220px + 20px gap) = 460px */
+  .cidades-carousel-viewport {
+    width: 460px;
+  }
+
+  .cidades-title {
+    font-size: 30px;
+  }
+
+  .cidades-title br,
+  .cidades-subtitle br {
+    display: none;
+  }
+}
+
+/* SMARTPHONES E TABLETS PEQUENOS (até 768px) */
+@media (max-width: 768px) {
+  .cidades-atendidas {
+    padding: 40px 0;
+    min-height: auto;
+  }
+
+  .cidades-container {
+    padding: 0 16px;
+  }
+
+  .cidades-title {
+    font-size: 26px;
+  }
+
+  .cidades-subtitle {
+    font-size: 15px;
+    margin-bottom: 28px;
+  }
+
+  .cidades-carousel-wrapper {
+    gap: 8px;
+  }
+
+  .carousel-arrow {
+    width: 36px;
+    height: 36px;
+  }
+
+  .cidades-btn {
+    width: 100%;
+    max-width: 320px;
+  }
+}
+
+/* SMARTPHONES PEQUENOS (até 600px) */
+@media (max-width: 600px) {
+  /* Exibe 1 card por vez (220px) */
+  .cidades-carousel-viewport {
+    width: 220px;
+  }
+
+  .cidades-cards-track {
+    gap: 16px;
+  }
+}
+
+/* SMARTPHONES MUITO PEQUENOS (até 360px) */
+@media (max-width: 360px) {
+  /* Reduz ligeiramente o card para telas super finas sem estourar o container */
+  .cidades-carousel-viewport {
+    width: 180px;
+  }
+
+  .cidade-card {
+    width: 180px;
+    height: 95px;
+  }
+
+  .cidade-card-name {
+    font-size: 14px;
+  }
+}

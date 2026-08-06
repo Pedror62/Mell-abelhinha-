@@ -1,0 +1,596 @@
+/* Overlay */
+.boleto-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 12px;
+}
+
+/* Card Principal */
+.boleto-modal-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  max-width: 850px;
+  width: 100%;
+  max-height: 95vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  padding: 20px 24px;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+/* Header */
+.boleto-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+
+.boleto-modal-header h2 {
+  margin: 0;
+  font-size: 18px;
+  color: #1e293b;
+  font-weight: 700;
+}
+
+.boleto-close-btn {
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0 8px;
+  transition: color 0.2s;
+}
+
+.boleto-close-btn:hover {
+  color: #1e293b;
+}
+
+/* Formulário de Busca */
+.boleto-search-form {
+  flex-shrink: 0;
+  margin-bottom: 12px;
+}
+
+.boleto-search-container {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.boleto-input {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 2px solid #e2e8f0;
+  font-size: 14px;
+  color: #0f172a;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.boleto-input:focus {
+  border-color: #0284c7;
+}
+
+.boleto-btn-primary {
+  padding: 10px 24px;
+  background-color: #0284c7;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+}
+
+.boleto-btn-primary:hover {
+  background-color: #0369a1;
+}
+
+.boleto-btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.boleto-checkbox-label {
+  font-size: 12px;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Conteúdo */
+.boleto-content {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+}
+
+/* Cliente */
+.boleto-cliente-card {
+  background-color: #f8fafc;
+  border-radius: 8px;
+  padding: 12px 16px;
+  border: 1px solid #e2e8f0;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.boleto-cliente-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.boleto-cliente-icon {
+  font-size: 18px;
+}
+
+.boleto-cliente-nome {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.boleto-cliente-cpf {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.boleto-resumo-row {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.boleto-resumo-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0px;
+}
+
+.boleto-resumo-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.boleto-resumo-valor {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.boleto-resumo-valor-pago {
+  font-size: 18px;
+  font-weight: 700;
+  color: #059669;
+}
+
+.boleto-resumo-valor-pendente {
+  font-size: 18px;
+  font-weight: 700;
+  color: #dc2626;
+}
+
+/* Serviço */
+.boleto-servico-card {
+  background-color: #f0f9ff;
+  border: 1px solid #b8dff5;
+  border-radius: 8px;
+  padding: 12px 16px;
+  flex-shrink: 0;
+}
+
+.boleto-servico-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.boleto-servico-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0c4a6e;
+}
+
+.boleto-servico-status {
+  padding: 3px 14px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-ativo {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.status-cancelado {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.boleto-servico-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 4px 16px;
+}
+
+.boleto-servico-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+}
+
+.boleto-servico-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.boleto-servico-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.boleto-servico-value-destaque {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0284c7;
+}
+
+/* Erro */
+.boleto-error {
+  padding: 10px 14px;
+  background-color: #fef2f2;
+  color: #991b1b;
+  border-radius: 6px;
+  border: 1px solid #fecaca;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+/* Faturas */
+.boleto-faturas-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.boleto-faturas-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
+.boleto-faturas-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.boleto-faturas-total {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0284c7;
+}
+
+.boleto-faturas-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-right: 2px;
+}
+
+/* Fatura Card */
+.boleto-fatura-card {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-left-width: 4px;
+  border-radius: 6px;
+  padding: 10px 14px;
+  transition: all 0.2s;
+}
+
+.boleto-fatura-card:hover {
+  background-color: #f1f5f9;
+}
+
+.boleto-fatura-card.fatura-paga {
+  opacity: 0.7;
+  background-color: #f9fafb;
+}
+
+.boleto-fatura-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.boleto-fatura-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.boleto-fatura-numero {
+  font-size: 12px;
+  font-weight: 700;
+  color: #475569;
+}
+
+.boleto-fatura-valor {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0284c7;
+}
+
+.boleto-fatura-pago {
+  font-size: 11px;
+  font-weight: 600;
+  color: #065f46;
+}
+
+.boleto-fatura-detalhes {
+  display: flex;
+  gap: 14px;
+  font-size: 11px;
+  color: #64748b;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.boleto-fatura-itens {
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px dashed #e2e8f0;
+}
+
+.boleto-fatura-itens-title {
+  font-size: 10px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+.boleto-fatura-itens-list {
+  padding: 0;
+  margin: 2px 0;
+  list-style: none;
+}
+
+.boleto-fatura-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #475569;
+  padding: 1px 0;
+}
+
+.boleto-fatura-item-valor {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.boleto-fatura-item-mais {
+  font-size: 10px;
+  color: #94a3b8;
+  font-style: italic;
+  padding: 1px 0;
+}
+
+/* Copy Row */
+.boleto-copy-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.boleto-input-readonly {
+  flex: 1;
+  padding: 5px 10px;
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+  background-color: #f1f5f9;
+  color: #334155;
+  font-size: 11px;
+  outline: none;
+  height: 30px;
+  font-family: monospace;
+  min-width: 0;
+}
+
+.boleto-btn-copy {
+  padding: 5px 14px;
+  background-color: #475569;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  height: 30px;
+  white-space: nowrap;
+  transition: background-color 0.2s;
+}
+
+.boleto-btn-copy:hover {
+  background-color: #334155;
+}
+
+.boleto-btn-copy.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.boleto-btn-copy-pix {
+  padding: 5px 14px;
+  background-color: #10b981;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  height: 30px;
+  white-space: nowrap;
+  transition: background-color 0.2s;
+}
+
+.boleto-btn-copy-pix:hover {
+  background-color: #059669;
+}
+
+.boleto-btn-copy-pix.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.boleto-btn-pdf {
+  display: inline-block;
+  text-align: center;
+  padding: 5px 16px;
+  background-color: #0284c7;
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 12px;
+  margin-top: 4px;
+  transition: background-color 0.2s;
+}
+
+.boleto-btn-pdf:hover {
+  background-color: #0369a1;
+}
+
+.boleto-btn-pdf.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Footer */
+.boleto-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
+.boleto-btn-secondary {
+  padding: 7px 20px;
+  background-color: #94a3b8;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 13px;
+  transition: background-color 0.2s;
+}
+
+.boleto-btn-secondary:hover {
+  background-color: #64748b;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .boleto-modal-card {
+    padding: 16px;
+    max-width: 100%;
+    max-height: 98vh;
+  }
+  
+  .boleto-modal-header h2 {
+    font-size: 16px;
+  }
+  
+  .boleto-servico-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .boleto-cliente-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .boleto-resumo-row {
+    width: 100%;
+    justify-content: space-around;
+  }
+  
+  .boleto-search-container {
+    flex-wrap: wrap;
+  }
+  
+  .boleto-btn-primary {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .boleto-servico-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .boleto-fatura-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .boleto-copy-row {
+    flex-wrap: wrap;
+  }
+  
+  .boleto-btn-copy,
+  .boleto-btn-copy-pix {
+    width: 100%;
+    justify-content: center;
+  }
+}

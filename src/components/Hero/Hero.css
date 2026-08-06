@@ -1,0 +1,465 @@
+/* ==========================================
+   IMPORTAÇÃO E CONFIGURAÇÃO DE FONTES
+   ========================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+/* ==========================================
+   HERO ESTRUTURA BASE (FIGMA DIMENSIONS)
+   ========================================== */
+
+.hero {
+  width: 100%;
+  max-width: 1920px;
+  min-height: 800px;
+  margin: 0 auto;
+  background: linear-gradient(90deg, #0042a5 0%, #005bc4 45%, #00bcff 100%);
+  
+  position: relative;
+  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  
+  padding-top: clamp(100px, 12vh, 140px);
+  padding-bottom: 0;
+  box-sizing: border-box;
+  overflow: visible;
+
+  /* FONTE PRINCIPAL */
+  font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+/* Garantir que TODOS os elementos herdem a fonte */
+.hero * {
+  font-family: inherit;
+}
+
+.hero-container {
+  width: 100%;
+  max-width: 1280px;
+  padding: 0 24px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  box-sizing: border-box;
+  flex: 1;
+}
+
+/* --- LADO ESQUERDO: TEXTOS --- */
+.hero-content {
+  width: 100%;
+  max-width: 600px;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  z-index: 2;
+}
+
+.hero-tag {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.12);
+  color: #72dbff;
+  font-family: 'Inter', 'Manrope', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 16px;
+  border-radius: 99px;
+  margin-bottom: 20px;
+  letter-spacing: 0.3px;
+}
+
+.hero-title {
+  font-family: 'Manrope', 'Inter', sans-serif;
+  font-size: clamp(28px, 3.4vw, 44px);
+  font-weight: 800;
+  line-height: 1.15;
+  margin: 0 0 20px 0;
+  letter-spacing: -0.5px;
+  color: #ffffff;
+  word-break: break-word;
+}
+
+.hero-subtitle {
+  font-family: 'Inter', 'Manrope', sans-serif;
+  font-size: clamp(14px, 1.3vw, 16px);
+  font-weight: 400;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0 0 32px 0;
+  max-width: 480px;
+}
+
+/* --- BOTÕES --- */
+.hero-buttons {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 32px;
+  align-items: center;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.btn-primary, .btn-secondary {
+  padding: 14px 28px;
+  border-radius: 12px;
+  font-family: 'Manrope', 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background-color: #ff6b00;
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background-color: #e56000;
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #ffffff;
+  gap: 8px;
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.btn-secondary span {
+  font-family: 'Manrope', 'Inter', sans-serif;
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.btn-secondary:hover span {
+  transform: translateX(4px);
+}
+
+/* --- BADGES --- */
+.hero-badges {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 99px;
+  color: #ffffff;
+  font-family: 'Inter', 'Manrope', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.badge-icon-vector {
+  margin-right: 6px;
+  flex-shrink: 0;
+}
+
+/* --- LADO DIREITO: IMAGEM (FIGMA DIMENSIONS) --- */
+.hero-image-container {
+  width: 100%;
+  max-width: 516px;
+  height: 580px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  z-index: 1;
+}
+
+.hero-image {
+  width: 516px;
+  height: 580px;
+  object-fit: contain;
+  opacity: 1;
+  transform: rotate(0deg);
+}
+
+.hide-on-mobile {
+  display: inline;
+}
+
+/* ==========================================
+   CARD LARANJA DE DESTAQUE
+   ========================================== */
+
+.hero-bottom-card {
+  width: calc(100% - 48px);
+  max-width: 1140px;
+  background: #FF801E;
+  border-radius: 20px;
+  box-shadow: 0px 12px 32px 0px rgba(15, 23, 42, 0.18);
+  
+  margin-bottom: -70px;
+  position: relative;
+  z-index: 10;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 32px 20px;
+  box-sizing: border-box;
+  opacity: 1;
+
+  font-family: 'Manrope', 'Inter', sans-serif;
+}
+
+.card-item {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #FFFFFF;
+  padding: 0 8px;
+}
+
+.card-icon {
+  width: 32px;
+  height: 32px;
+  margin-bottom: 12px;
+  color: #FFFFFF;
+  flex-shrink: 0;
+}
+
+.card-item p {
+  font-family: 'Manrope', 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.3;
+  margin: 0;
+  color: #FFFFFF;
+  letter-spacing: -0.2px;
+}
+
+/* Divisórias Verticais */
+.card-divider {
+  width: 1px;
+  height: 60px;
+  background-color: rgba(255, 255, 255, 0.4);
+  flex-shrink: 0;
+}
+
+/* ==========================================
+   CONFIGURAÇÃO PARA NÚMEROS
+   ========================================== */
+
+/* Garantir que números usem a fonte correta com alinhamento tabular */
+.hero * {
+  font-feature-settings: "tnum" on, "lnum" on;
+  -webkit-font-feature-settings: "tnum" on, "lnum" on;
+  -moz-font-feature-settings: "tnum" on, "lnum" on;
+}
+
+/* Para elementos que contêm apenas números */
+.numbers-only {
+  font-family: 'Manrope', 'Inter', sans-serif;
+  font-feature-settings: "tnum" on, "lnum" on;
+  -webkit-font-feature-settings: "tnum" on, "lnum" on;
+  -moz-font-feature-settings: "tnum" on, "lnum" on;
+}
+
+/* ==========================================
+   BREAKPOINTS DE RESPONSIVIDADE
+   ========================================== */
+
+/* NOTEBOOKS PEQUENOS E MONITORES MÉDIOS (até 1200px) */
+@media (max-width: 1200px) {
+  .hero {
+    min-height: auto;
+  }
+
+  .hero-image-container {
+    max-width: 420px;
+    height: auto;
+  }
+
+  .hero-image {
+    width: 100%;
+    height: auto;
+  }
+}
+
+@media (max-width: 1100px) {
+  .card-item p {
+    font-size: 14px;
+  }
+}
+
+/* TABLETS (até 992px) */
+@media (max-width: 992px) {
+  .hero {
+    padding-top: 100px;
+  }
+
+  .hero-container {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .hero-content {
+    align-items: center;
+    max-width: 100%;
+  }
+
+  .hero-subtitle {
+    max-width: 100%;
+  }
+
+  .hero-buttons, .hero-badges {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .hero-image-container {
+    justify-content: center;
+    max-width: 380px;
+    height: auto;
+  }
+
+  /* Card vira grade 2x2 */
+  .hero-bottom-card {
+    flex-wrap: wrap;
+    height: auto;
+    min-height: 0;
+    row-gap: 32px;
+    column-gap: 0;
+  }
+
+  .card-item {
+    flex: 1 1 40%;
+  }
+
+  .card-divider:nth-child(2),
+  .card-divider:nth-child(6) {
+    display: none;
+  }
+
+  .card-divider {
+    height: 50px;
+  }
+}
+
+/* CELULARES (até 600px) */
+@media (max-width: 600px) {
+  .hero {
+    padding-top: 88px;
+  }
+
+  .hide-on-mobile {
+    display: none;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+  }
+
+  .btn-primary, .btn-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .hero-badges {
+    gap: 8px;
+  }
+
+  .badge {
+    font-size: 11px;
+    padding: 6px 12px;
+  }
+
+  .hero-bottom-card {
+    flex-direction: column;
+    margin-bottom: -40px;
+    padding: 24px 16px;
+    gap: 24px;
+  }
+
+  .card-item {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+
+  .card-divider {
+    width: 70%;
+    height: 1px;
+  }
+}
+
+/* CELULARES PEQUENOS (até 380px) */
+@media (max-width: 380px) {
+  .hero-title {
+    font-size: 26px;
+  }
+
+  .hero-subtitle {
+    font-size: 13px;
+  }
+
+  .card-item p {
+    font-size: 13px;
+  }
+}
+
+/* ==========================================
+   GARANTIA DE FALLBACK PARA TODOS OS TEXTOS
+   ========================================== */
+
+/* Para caracteres especiais e alfabeto */
+.hero-tag,
+.hero-title,
+.hero-subtitle,
+.btn-primary,
+.btn-secondary,
+.badge,
+.card-item p {
+  font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+/* Aplicação específica para o alfabeto completo (A-Z e a-z) */
+.hero-title:not(:empty),
+.hero-subtitle:not(:empty),
+.btn-primary:not(:empty),
+.btn-secondary:not(:empty) {
+  font-family: 'Manrope', 'Inter', sans-serif;
+}
+
+/* Aplicação para o texto do card */
+.card-item p:not(:empty) {
+  font-family: 'Manrope', 'Inter', sans-serif;
+}
+
+/* Otimização para renderização de texto */
+.hero-title,
+.hero-subtitle,
+.btn-primary,
+.btn-secondary,
+.badge,
+.card-item p {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}

@@ -1,0 +1,324 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@700;800&display=swap');
+
+/* ==========================================
+   ESTILOS BASE (DESKTOP FIRST)
+   ========================================== */
+
+/* SEÇÃO PRINCIPAL */
+.quem-somos {
+  width: 100%;
+  max-width: 1920px;
+  background: #FFFFFF;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 64px 0;
+  box-sizing: border-box;
+  margin: 0 auto;
+}
+
+.quem-somos-container {
+  width: 100%;
+  max-width: 900px; /* Largura ideal para a lista vertical de cards */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0 24px;
+  box-sizing: border-box;
+}
+
+/* BADGE SUPERIOR */
+.quem-somos-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 16px;
+  border: 1px solid #00A1DC;
+  border-radius: 99px;
+  background: #FFFFFF;
+  margin-bottom: 20px;
+}
+
+.quem-somos-tag span {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  color: #00A1DC;
+}
+
+/* TÍTULO & SUBTÍTULO */
+.quem-somos-title {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 800;
+  font-size: 38px;
+  line-height: 1.2;
+  color: #111827;
+  margin: 0 0 16px 0;
+}
+
+.quem-somos-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 17px;
+  line-height: 1.6;
+  color: #6B7280;
+  margin: 0 0 40px 0;
+}
+
+/* LISTA DE CARDS */
+.quem-somos-cards-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* --- CARD BANNER HORIZONTAL --- */
+.card-banner {
+  width: 100%;
+  height: 200px;
+  background: #021229;
+  background-image: linear-gradient(100deg, #021229 0%, #00224D 45%, #003B73 70%, #005691 100%);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  overflow: hidden;
+  position: relative;
+  box-sizing: border-box;
+  box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-banner:hover {
+  transform: translateY(-2px);
+  box-shadow: 0px 12px 28px rgba(0, 0, 0, 0.15);
+}
+
+/* CONTEÚDO DE TEXTO (ESQUERDA) */
+.card-banner-content {
+  flex: 1;
+  padding: 32px 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  z-index: 2;
+  max-width: 55%;
+}
+
+.card-icon-wrapper {
+  width: 28px;
+  height: 28px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-icon-wrapper svg {
+  width: 100%;
+  height: 100%;
+}
+
+.card-banner-content h3 {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 800;
+  font-size: 22px;
+  line-height: 28px;
+  color: #00A1DC;
+  margin: 0 0 8px 0;
+}
+
+.card-banner-content p {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 21px;
+  color: #E5E7EB;
+  margin: 0;
+}
+
+/* IMAGEM DO BANNER PADRÃO (CARDS NORMAIS - FIXOS E VISÍVEIS) */
+.card-banner-image {
+  width: 55%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  padding: 0;
+}
+
+.card-banner-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: right center;
+  opacity: 1;
+  transform: none;
+  transition: none;
+  mask-image: linear-gradient(to right, transparent 0%, black 20%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 20%);
+}
+
+.card-banner:hover .card-banner-image img {
+  opacity: 1;
+  transform: none;
+}
+
+/* ==========================================
+   CARD ESPECIAL: MASCOTE (experienciaImg SALTA PARA FORA)
+   ========================================== */
+
+/* Permite vazar o conteúdo para fora do card no hover */
+.card-banner--mascote {
+  overflow: visible;
+}
+
+.card-banner--mascote .card-banner-image {
+  overflow: visible;
+  justify-content: flex-end;
+}
+
+.card-banner--mascote .card-banner-image img {
+  width: auto;
+  height: 120%;                  /* Fica levemente maior por padrão */
+  max-width: none;
+  object-fit: contain;
+  object-position: right bottom;
+  mask-image: none !important;
+  -webkit-mask-image: none !important;
+  opacity: 1 !important;
+  transform: translateY(5%) scale(1) !important;
+  transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.45s ease !important;
+  filter: drop-shadow(0 8px 4px rgba(0, 0, 0, 0.3));
+  pointer-events: none;
+}
+
+/* No hover do CARD DE EXPERIÊNCIA, a imagem salta para fora */
+.card-banner--mascote:hover .card-banner-image img {
+  transform: translateY(-15%) translateX(5%) scale(1.48) rotate(-2deg) !important;
+  filter: drop-shadow(0 25px 30px rgba(0, 0, 0, 0.45));
+}
+
+/* ==========================================
+   RESPONSIVIDADE
+   ========================================== */
+
+/* TELAS MÉDIAS (Tablets em modo Paisagem e Laptops Pequenos) */
+@media (max-width: 992px) {
+  .quem-somos-container {
+    padding: 0 20px;
+  }
+
+  .quem-somos-title {
+    font-size: 32px;
+    line-height: 1.25;
+  }
+
+  .card-banner {
+    height: auto;
+    min-height: 210px;
+  }
+
+  .card-banner-content {
+    max-width: 60%;
+    padding: 28px;
+  }
+
+  .card-banner-image {
+    width: 40%;
+  }
+}
+
+/* TELAS PEQUENAS (Tablets em modo Retrato e Celulares) */
+@media (max-width: 768px) {
+  .quem-somos {
+    padding: 40px 0;
+  }
+
+  .quem-somos-title {
+    font-size: 26px;
+  }
+
+  .quem-somos-subtitle {
+    font-size: 15px;
+    margin-bottom: 28px;
+  }
+
+  /* Card passa a empilhar verticalmente */
+  .card-banner {
+    flex-direction: column;
+    align-items: stretch;
+    height: auto;
+    border-radius: 16px;
+  }
+
+  .card-banner-content {
+    max-width: 100%;
+    padding: 24px 20px 16px 20px;
+  }
+
+  .card-banner-content h3 {
+    font-size: 20px;
+    line-height: 26px;
+  }
+
+  .card-banner-content p {
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  /* Imagem fica fixa abaixo do texto no mobile */
+  .card-banner-image {
+    width: 100%;
+    height: 180px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .card-banner-image img {
+    opacity: 1 !important;
+    transform: none !important;
+    object-position: center;
+    mask-image: linear-gradient(to top, black 70%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to top, black 70%, transparent 100%);
+  }
+
+  /* No mobile, limita o pulo do mascote para não quebrar o layout */
+  .card-banner--mascote .card-banner-image img {
+    height: 115%;
+    transform: translateY(0) scale(1) !important;
+  }
+
+  .card-banner--mascote:hover .card-banner-image img {
+    transform: translateY(-5%) scale(1.05) !important;
+  }
+}
+
+/* CELULARES PEQUENOS (Até 480px) */
+@media (max-width: 480px) {
+  .quem-somos-title {
+    font-size: 22px;
+  }
+
+  .quem-somos-subtitle {
+    font-size: 14px;
+  }
+
+  .card-banner-content {
+    padding: 20px 16px 12px 16px;
+  }
+
+  .card-banner-content h3 {
+    font-size: 18px;
+  }
+
+  .card-banner-image {
+    height: 150px;
+  }
+}

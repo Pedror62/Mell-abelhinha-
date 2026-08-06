@@ -1,0 +1,176 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Manrope:wght@700;800&display=swap');
+
+/* SEÇÃO PRINCIPAL */
+.cta-endereco {
+  width: 100%;
+  max-width: 1920px;
+  min-height: 400px;
+  background: #FFFFFF;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  padding: 56px 24px;
+  box-sizing: border-box;
+}
+
+/* CARD AZUL CENTRAL */
+.cta-endereco-card {
+  width: 100%;
+  max-width: 960px;
+  min-height: 300px;
+  height: auto;
+  background: #00A1DC;
+  border-radius: 24px;
+  box-shadow: 0px 9px 27px 0px rgba(15, 23, 42, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 48px;
+  box-sizing: border-box;
+}
+
+/* TÍTULO PRINCIPAL */
+.cta-endereco-title {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 800;
+  font-size: 26px;
+  line-height: 1.25;
+  color: #FFFFFF;
+  margin: 0 0 16px 0;
+  letter-spacing: -0.3px;
+}
+
+/* SUBTÍTULO */
+.cta-endereco-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.92);
+  margin: 0 0 28px 0;
+}
+
+/* BOTÃO LARANJA */
+.cta-endereco-btn {
+  width: 100%;
+  max-width: 375px;
+  height: 50px;
+  background: #FF801E;
+  border-radius: 14px;
+  box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.12);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-decoration: none;
+  transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+.cta-endereco-btn:hover {
+  background: #f07313;
+  transform: translateY(-2px);
+  box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.18);
+}
+
+.cta-endereco-btn span {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 14.5px;
+  color: #FFFFFF;
+  white-space: nowrap;
+}
+
+/* ÍCONE DA SETA NO BOTÃO */
+.cta-endereco-btn-icon {
+  width: 22px;
+  height: 22px;
+  background: #FFFFFF;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cta-endereco-btn-icon svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* ==========================================
+   MEDIA QUERIES (RESPONSIVIDADE COMPLETA)
+   ========================================== */
+
+/* TABLETS E PANTALAS MÉDIAS (até 1024px) */
+@media (max-width: 1024px) {
+  .cta-endereco {
+    min-height: auto;
+    padding: 40px 20px;
+  }
+
+  .cta-endereco-card {
+    padding: 36px 32px;
+  }
+
+  .cta-endereco-title {
+    font-size: 24px;
+  }
+
+  .cta-endereco-title br,
+  .cta-endereco-subtitle br {
+    display: none;
+  }
+}
+
+/* SMARTPHONES E TABLETS PEQUENOS (até 768px) */
+@media (max-width: 768px) {
+  .cta-endereco {
+    padding: 32px 16px;
+  }
+
+  .cta-endereco-card {
+    border-radius: 18px;
+    padding: 28px 20px;
+  }
+
+  .cta-endereco-title {
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+
+  .cta-endereco-subtitle {
+    font-size: 13.5px;
+    margin-bottom: 24px;
+  }
+
+  .cta-endereco-btn {
+    height: 46px;
+  }
+
+  .cta-endereco-btn span {
+    font-size: 13.5px;
+  }
+}
+
+/* SMARTPHONES PEQUENOS (até 480px) */
+@media (max-width: 480px) {
+  .cta-endereco-title {
+    font-size: 18px;
+  }
+
+  .cta-endereco-subtitle {
+    font-size: 13px;
+  }
+
+  .cta-endereco-btn span {
+    font-size: 12.5px;
+    /* Se o texto do botão for muito longo em telas minúsculas, permite quebrar e não estourar */
+    white-space: normal;
+    text-align: center;
+  }
+}

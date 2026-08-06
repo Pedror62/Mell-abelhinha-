@@ -1,0 +1,457 @@
+/* ==========================================
+   IMPORTAÇÃO E CONFIGURAÇÃO DE FONTES
+   ========================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+/* ==========================================
+   NAVBAR TRANSPARENTE (ESTILO FIGMA)
+   ========================================== */
+
+.navbar {
+  width: 100%;
+  max-width: 1920px;
+  height: 88px;
+
+  background: rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  opacity: 1;
+
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+
+  /* FONTE PRINCIPAL */
+  font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+/* Garantir que TODOS os elementos herdem a fonte */
+.navbar * {
+  font-family: inherit;
+}
+
+.navbar-container {
+  width: 100%;
+  height: 100%;
+  padding: 0 80px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+/* Logo */
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.navbar-logo img {
+  height: 40px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+
+/* ==========================================
+   LINKS DE NAVEGAÇÃO
+   ========================================== */
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 36px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Estilo unificado para LINKS <a> e BOTÃO <button> de Contato */
+.navbar-links a,
+.nav-link-btn {
+  background: transparent;
+  border: none;
+  font-family: 'Manrope', 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  color: #FFFFFF;
+  text-decoration: none;
+  opacity: 0.85;
+  transition: opacity 0.2s ease-in-out, color 0.2s ease-in-out;
+  position: relative;
+  padding: 4px 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  letter-spacing: -0.01em;
+}
+
+/* Hover e Estado Ativo */
+.navbar-links a:hover,
+.nav-link-btn:hover,
+.nav-link-btn.active {
+  opacity: 1;
+  color: #00A1DC;
+}
+
+/* Sublinhado azul no hover */
+.navbar-links a::after,
+.nav-link-btn::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background-color: #00A1DC;
+  transition: width 0.25s ease-in-out;
+  border-radius: 2px;
+}
+
+.navbar-links a:hover::after,
+.nav-link-btn:hover::after,
+.nav-link-btn.active::after {
+  width: 100%;
+}
+
+/* Container do item de menu Contato */
+.nav-item-contato {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* ==========================================
+   POPOVER / BALÃO ESTILO CARD MODERNO
+   ========================================== */
+
+/* O Balão Flutuante */
+.popover-balao {
+  position: absolute;
+  top: calc(100% + 14px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 280px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+  border: 1px solid #e2e8f0;
+  z-index: 1000;
+  font-family: 'Manrope', 'Inter', sans-serif;
+  animation: popupSlideIn 0.25s ease-out forwards;
+}
+
+/* Animação suave de abertura */
+@keyframes popupSlideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 6px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+/* Triângulo/Seta no topo do Balão */
+.balao-arrow {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid #ffffff;
+}
+
+/* Sombra suave para o triângulo alinhar com a borda */
+.balao-arrow::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -8px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid #e2e8f0;
+  z-index: -1;
+}
+
+/* Header do Balão */
+.balao-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding: 0 2px;
+}
+
+.balao-header span {
+  font-family: 'Manrope', 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  letter-spacing: -0.2px;
+}
+
+/* Botão X de Fechar */
+.balao-close-btn {
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  color: #64748b;
+  cursor: pointer;
+  line-height: 1;
+  padding: 2px 4px;
+  transition: color 0.2s ease;
+}
+
+.balao-close-btn:hover {
+  color: #1e293b;
+}
+
+/* Container de Cards */
+.balao-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Cards Individuais de Opção */
+.balao-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid #f1f5f9;
+  border-radius: 12px;
+  background-color: #f8fafc;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  width: 100%;
+  font-family: 'Manrope', 'Inter', sans-serif;
+}
+
+.balao-card:hover {
+  background-color: #f1f5f9;
+  border-color: #e2e8f0;
+  transform: translateY(-1px);
+}
+
+/* Ícones */
+.balao-card-icon {
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.balao-card-icon.green {
+  color: #25d366;
+}
+
+.balao-card-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.balao-card-text strong {
+  font-family: 'Manrope', 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.balao-card-text p {
+  font-family: 'Manrope', 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  color: #64748b;
+  margin: 2px 0 0 0;
+}
+
+/* ==========================================
+   BOTÕES DE AÇÃO (CTA)
+   ========================================== */
+.navbar-btn {
+  background-color: #FF6B00;
+  color: #FFFFFF;
+  text-decoration: none;
+  font-family: 'Manrope', 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  padding: 14px 28px;
+  border-radius: 12px;
+  transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.navbar-btn:hover {
+  background-color: #E56000;
+  transform: translateY(-1px);
+}
+
+.btn-central-assinante {
+  background-color: #00A1DC;
+  color: #FFFFFF;
+  text-decoration: none;
+  font-family: 'Manrope', 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  padding: 12px 24px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+  transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  box-shadow: 0 4px 14px rgba(0, 161, 220, 0.25);
+}
+
+.btn-central-assinante svg {
+  width: 18px;
+  height: 18px;
+}
+
+.btn-central-assinante:hover {
+  background-color: #0081B0;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0, 161, 220, 0.35);
+}
+
+/* ==========================================
+   RESPONSIVIDADE
+   ========================================== */
+@media (max-width: 1024px) {
+  .navbar-container {
+    padding: 0 40px;
+  }
+
+  .navbar-links {
+    gap: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    height: 72px;
+  }
+
+  .navbar-container {
+    padding: 0 24px;
+  }
+
+  .navbar-links {
+    display: none;
+  }
+
+  .navbar-logo img {
+    height: 32px;
+  }
+
+  .navbar-btn,
+  .btn-central-assinante {
+    padding: 10px 18px;
+    font-size: 14px;
+    border-radius: 10px;
+  }
+
+  .btn-central-assinante svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    height: 64px;
+  }
+
+  .navbar-container {
+    padding: 0 16px;
+  }
+
+  .navbar-logo img {
+    height: 28px;
+  }
+
+  .navbar-btn,
+  .btn-central-assinante {
+    padding: 8px 14px;
+    font-size: 12.5px;
+    border-radius: 8px;
+  }
+
+  .btn-central-assinante svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+/* ==========================================
+   CONFIGURAÇÃO PARA NÚMEROS (0123456789)
+   ========================================== */
+
+/* Garantir que números usem a fonte correta com alinhamento tabular */
+.navbar-container,
+.navbar-links,
+.navbar-logo,
+.btn-central-assinante,
+.balao-card-text,
+.navbar * {
+  font-feature-settings: "tnum" on, "lnum" on;
+  -webkit-font-feature-settings: "tnum" on, "lnum" on;
+  -moz-font-feature-settings: "tnum" on, "lnum" on;
+}
+
+/* Para elementos que contêm apenas números */
+.numbers-only {
+  font-family: 'Manrope', 'Inter', sans-serif;
+  font-feature-settings: "tnum" on, "lnum" on;
+  -webkit-font-feature-settings: "tnum" on, "lnum" on;
+  -moz-font-feature-settings: "tnum" on, "lnum" on;
+}
+
+/* ==========================================
+   GARANTIA DE FALLBACK PARA TODOS OS TEXTOS
+   ========================================== */
+
+/* Para caracteres especiais e alfabeto */
+.navbar-links a,
+.nav-link-btn,
+.balao-header span,
+.balao-card-text strong,
+.balao-card-text p,
+.btn-central-assinante,
+.navbar-btn {
+  font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+/* Aplicação específica para o alfabeto completo (A-Z e a-z) */
+.navbar-links a:not(:empty),
+.nav-link-btn:not(:empty) {
+  font-family: 'Manrope', 'Inter', sans-serif;
+}
