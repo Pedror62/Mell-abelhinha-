@@ -1,12 +1,7 @@
-// src/components/BoletoModal/BoletoModal.jsx
 import React, { useState } from 'react';
 import './BoletoModal.css';
 
-// ============================================
-// FUNÇÕES AUXILIARES (NÃO ALTERAR)
-// ============================================
-
-// Função para formatar data no padrão brasileiro
+// Função auxiliar para formatar data
 function formatarDataBR(data) {
   if (!data) return 'N/A';
   
@@ -38,7 +33,7 @@ function formatarDataBR(data) {
   }
 }
 
-// Função para formatar valores monetários
+// Função auxiliar para formatar moeda
 function formatCurrency(value) {
   if (value === undefined || value === null || isNaN(value)) return 'R$ 0,00';
   return new Intl.NumberFormat('pt-BR', {
@@ -47,12 +42,7 @@ function formatCurrency(value) {
   }).format(value);
 }
 
-// ============================================
-// COMPONENTE PRINCIPAL
-// ============================================
-
 const BoletoModal = ({ isOpen, onClose }) => {
-  // Estados do componente
   const [cpfCnpj, setCpfCnpj] = useState('');
   const [loading, setLoading] = useState(false);
   const [faturas, setFaturas] = useState([]);
@@ -68,13 +58,8 @@ const BoletoModal = ({ isOpen, onClose }) => {
   const [mensagemInfo, setMensagemInfo] = useState(null);
   const [abaAtiva, setAbaAtiva] = useState('pendentes');
   const [clienteEncontrado, setClienteEncontrado] = useState(false);
-  const [servicoDetalhado, setServicoDetalhado] = useState(null);
 
   if (!isOpen) return null;
-
-  // ============================================
-  // HANDLERS
-  // ============================================
 
   const handleBuscarBoleto = async (e) => {
     e.preventDefault();
@@ -92,18 +77,9 @@ const BoletoModal = ({ isOpen, onClose }) => {
     setMensagemInfo(null);
     setAbaAtiva('pendentes');
     setClienteEncontrado(false);
-    setServicoDetalhado(null);
-
-    // ============================================
-    // ALTERAÇÃO 1: URL DA API DINÂMICA
-    // Agora funciona tanto em local quanto na Vercel
-    // ============================================
-    const API_URL = import.meta.env.PROD 
-      ? '/api'  // Em produção (Vercel)
-      : 'http://localhost:3001'; // Em desenvolvimento
 
     try {
-      const response = await fetch(`${API_URL}/consultar-boleto`, {
+      const response = await fetch('http://localhost:3001/api/consultar-boleto', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -113,6 +89,7 @@ const BoletoModal = ({ isOpen, onClose }) => {
       });
 
       const data = await response.json();
+
       console.log('Resposta da API:', data);
 
       if (data.mensagem) {
@@ -141,7 +118,6 @@ const BoletoModal = ({ isOpen, onClose }) => {
       let servicosArray = [];
       let servicoAtivo = null;
 
-      // Processa os dados recebidos
       if (data.faturas) {
         faturasArray = data.faturas;
         servicoAtivo = data.dadosServico || null;
@@ -150,9 +126,7 @@ const BoletoModal = ({ isOpen, onClose }) => {
         setResumoFaturas({
           total: data.totalFaturas || 0,
           pagas: data.totalFaturasPagas || 0,
-          pendentes: data.totalFaturasPendentes || 0,
-          vencidas: data.totalFaturasVencidas || 0,
-          em_aberto: data.resumo?.em_aberto || 0
+          pendentes: data.totalFaturasPendentes || 0
         });
       } else if (Array.isArray(data)) {
         faturasArray = data;
@@ -186,40 +160,6 @@ const BoletoModal = ({ isOpen, onClose }) => {
             setStatusCliente(servicoAtivo.status);
           }
         }
-      }
-
-      // Extrai serviço detalhado do cliente
-      if (data.cliente_detalhes?.servico_detalhes) {
-        const servico = data.cliente_detalhes.servico_detalhes;
-        setServicoDetalhado({
-          id_cliente_servico: servico.id_cliente_servico || 'N/A',
-          numero_plano: servico.numero_plano || 'N/A',
-          nome: servico.nome || 'Plano não informado',
-          valor: servico.valor || 0,
-          status: servico.status || 'Status não informado',
-          status_prefixo: servico.status_prefixo || null,
-          tecnologia: servico.tecnologia || 'Não informado',
-          login: servico.login || 'N/A',
-          ipv4: servico.ipv4 || 'N/A',
-          mac_addr: servico.mac_addr || 'N/A',
-        });
-        if (servico.status) {
-          setStatusCliente(servico.status);
-        }
-      } else if (faturasArray.length > 0 && faturasArray[0].cliente?.servico) {
-        const servico = faturasArray[0].cliente.servico;
-        setServicoDetalhado({
-          id_cliente_servico: servico.id || 'N/A',
-          numero_plano: servico.numero_plano || 'N/A',
-          nome: servico.nome || 'Plano não informado',
-          valor: servico.valor || 0,
-          status: servico.status || 'Status não informado',
-          status_prefixo: servico.status_prefixo || null,
-          tecnologia: servico.tecnologia || 'Não informado',
-          login: servico.login || 'N/A',
-          ipv4: servico.ipv4 || 'N/A',
-          mac_addr: servico.mac_addr || 'N/A',
-        });
       }
 
       if (faturasArray.length === 0) {
@@ -284,7 +224,6 @@ const BoletoModal = ({ isOpen, onClose }) => {
     setErro('');
     setAbaAtiva('pendentes');
     setCpfCnpj('');
-    setServicoDetalhado(null);
   };
 
   const handleCopiar = async (texto, idFatura, tipo) => {
@@ -305,10 +244,6 @@ const BoletoModal = ({ isOpen, onClose }) => {
       console.error('Falha ao copiar:', err);
     }
   };
-
-  // ============================================
-  // FUNÇÕES AUXILIARES DE RENDERIZAÇÃO
-  // ============================================
 
   const getBadgeStyle = (status) => {
     const st = status?.toLowerCase() || '';
@@ -333,7 +268,7 @@ const BoletoModal = ({ isOpen, onClose }) => {
     if (listaFaturas.length === 0) {
       return (
         <div className="empty-state">
-          <div className="empty-icon">—</div>
+          <div className="empty-icon">-</div>
           <p className="empty-text">Nenhuma fatura {titulo.toLowerCase()} encontrada</p>
         </div>
       );
@@ -345,9 +280,11 @@ const BoletoModal = ({ isOpen, onClose }) => {
       const isLinhaCopiada = copiado === `${fatura.id_fatura || index}-linha`;
       const isPixCopiado = copiado === `${fatura.id_fatura || index}-pix`;
 
+      // Formata as datas
       const dataVencimento = formatarDataBR(fatura.data_vencimento);
       const dataPagamento = formatarDataBR(fatura.data_pagamento);
 
+      // Status do serviço
       const statusServico = fatura.cliente?.servico?.status || 'Não informado';
       const isServicoAtivo = statusServico.toLowerCase().includes('habilitado') || 
                             statusServico.toLowerCase().includes('ativo') ||
@@ -363,9 +300,9 @@ const BoletoModal = ({ isOpen, onClose }) => {
             </div>
             <div className="fatura-status">
               {isPago ? (
-                <span className="badge-pago">Paga</span>
+                <span className="badge-pago">Pago</span>
               ) : statusFatura === 'Vencido' ? (
-                <span className="badge-vencido">Vencida</span>
+                <span className="badge-vencido">Vencido</span>
               ) : (
                 <span className="badge-pendente">Pendente</span>
               )}
@@ -444,8 +381,8 @@ const BoletoModal = ({ isOpen, onClose }) => {
             {!isPago && fatura.pix_copia_e_cola && (
               <div className="pix-area">
                 <div className="pix-header">
-                  <span className="pix-icon">◆</span>
-                  <span className="pix-title">Pix Copia e Cola</span>
+                  <span className="pix-icon">P</span>
+                  <span className="pix-title">Código PIX</span>
                 </div>
                 <div className="pix-codigo">
                   <input
@@ -458,7 +395,7 @@ const BoletoModal = ({ isOpen, onClose }) => {
                     onClick={() => handleCopiar(fatura.pix_copia_e_cola, fatura.id_fatura || index, 'pix')}
                     className={`btn-pix ${isPixCopiado ? 'copiado' : ''}`}
                   >
-                    {isPixCopiado ? 'Copiado!' : 'Copiar Pix'}
+                    {isPixCopiado ? 'Copiado!' : 'Copiar'}
                   </button>
                 </div>
               </div>
@@ -491,10 +428,6 @@ const BoletoModal = ({ isOpen, onClose }) => {
     });
   };
 
-  // ============================================
-  // RENDERIZAÇÃO PRINCIPAL
-  // ============================================
-
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -502,15 +435,12 @@ const BoletoModal = ({ isOpen, onClose }) => {
         <button className="modal-close" onClick={onClose}>✕</button>
         
         {!clienteEncontrado ? (
-          // ============================================
-          // TELA DE CONSULTA INICIAL
-          // ============================================
           <>
             <div className="modal-header">
               <div className="modal-header-left">
                 <div className="modal-icon">2</div>
                 <div className="modal-title-group">
-                  <h1 className="modal-title">2ª Via de Boleto</h1>
+                  <h1 className="modal-title">2 Via de Boleto</h1>
                   <p className="modal-subtitle">Digite seu CPF ou CNPJ para consultar faturas em aberto</p>
                 </div>
               </div>
@@ -565,9 +495,6 @@ const BoletoModal = ({ isOpen, onClose }) => {
             </button>
           </>
         ) : (
-          // ============================================
-          // TELA DE RESULTADOS
-          // ============================================
           <>
             {/* Cliente Card */}
             {clienteInfo && (
@@ -593,26 +520,6 @@ const BoletoModal = ({ isOpen, onClose }) => {
               </div>
             )}
 
-            {/* Serviço Detalhado */}
-            {servicoDetalhado && (
-              <div className="servico-detalhes">
-                <div className="servico-detalhes-grid">
-                  <div className="servico-detalhe-item">
-                    <span className="servico-detalhe-label">Plano</span>
-                    <span className="servico-detalhe-value">{servicoDetalhado.nome}</span>
-                  </div>
-                  <div className="servico-detalhe-item">
-                    <span className="servico-detalhe-label">Status</span>
-                    <span className="servico-detalhe-value">{servicoDetalhado.status}</span>
-                  </div>
-                  <div className="servico-detalhe-item">
-                    <span className="servico-detalhe-label">Tecnologia</span>
-                    <span className="servico-detalhe-value">{servicoDetalhado.tecnologia}</span>
-                  </div>
-                </div>
-              </div>
-            )}
-
             {/* Resumo de Faturas */}
             {resumoFaturas && (
               <div className="resumo-faturas">
@@ -631,7 +538,6 @@ const BoletoModal = ({ isOpen, onClose }) => {
               </div>
             )}
 
-            {/* Faturas */}
             {(faturasPendentes.length > 0 || faturasPagas.length > 0) && (
               <div className="faturas-container">
                 <div className="tabs">
