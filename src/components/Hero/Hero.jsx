@@ -10,7 +10,7 @@ export const Hero = () => {
         {/* Lado Esquerdo: Conteúdo de Texto */}
         <div className="hero-content">
           <span className="hero-tag">
-            Fibra de verdade para o Norte de Minas
+            Fibra de verdade para você
           </span>
 
           <h1 className="hero-title">
