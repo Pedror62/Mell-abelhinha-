@@ -3,7 +3,6 @@ import "./App.css";
 
 // Importação dos componentes da aplicação
 import Navbar from "./components/Navbar/Navbar";
-// import Sidebar from "./components/Sidebar/Sidebar"; // Reservado para futura implementação
 import Hero from "./components/Hero/Hero";
 import ConsultaPlano from "./components/ConsultaPlano/ConsultaPlano";
 import Planos from "./components/Planos/Planos";
@@ -14,38 +13,31 @@ import QuemSomos from "./components/QuemSomos/QuemSomos";
 import Faq from "./components/Faq/Faq";
 import Footer from "./components/Footer/Footer";
 import FloatingWidget from "./components/FloatingWidget/FloatingWidget";
-
+import ChatButton from "./components/ChatButton/ChatButton"; // Botão exclusivo do chat
+import { useOmniChat } from "./hooks/useOmniChat";
 
 function App() {
+  // Inicializa o OmniChat globalmente (sem mostrar botão automático)
+  useOmniChat(null);
+
   return (
     <div className="App">
-      {/* Cabeçalho e Navegação */}
       <Navbar />
-      {/* <Sidebar /> */}
-
-      {/* Seção Principal / Banner Hero */}
       <Hero />
-
-      {/* Consultas e Ofertas */}
       <Planos />
       <Ecossistema />
       <ConsultaPlano />
-
       <CtaEndereco />
-
-      {/* Ecossistema e Cidades */}
       <CidadesAtendidas />
-
-      {/* Sobre e Perguntas Frequentes */}
       <QuemSomos />
       <Faq />
-
-      {/* Rodapé */}
       <Footer />
 
-      {/* Widget Flutuante Unificado (Disponível Globalmente) */}
+      {/* Widget de Meus Dados (Direita) */}
       <FloatingWidget />
      
+      {/* Botão Exclusivo do Chat (Esquerda) */}
+      <ChatButton />
     </div>
   );
 }

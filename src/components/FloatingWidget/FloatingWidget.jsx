@@ -2,12 +2,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './FloatingWidget.css';
 import './MeusDados.css';
-import { FaWhatsapp } from 'react-icons/fa';
+// Importação dos ícones necessários
+import { FaWhatsapp, FaFileAlt, FaCalendarAlt, FaExclamationCircle, FaCheckCircle, FaClock, FaBarcode, FaDownload } from 'react-icons/fa';
+import { SiPix } from 'react-icons/si';
+
 import BoletoModal from './BoletoModal';
 import AtendimentoModal from './AtendimentoModal';
 import LojasModal from './LojasModal';
 import CancelamentoModal from '../Autoatendimento/CancelamentoModal';
 import Toast from './Toast';
+
+import { useOmniChat } from '../../hooks/useOmniChat'; // Ajuste o caminho se necessário
 
 const API_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
 
@@ -268,11 +273,15 @@ const FloatingWidget = () => {
       const faturas = Array.isArray(data.faturas) ? data.faturas : [];
       const pagas = Array.isArray(data.faturasPagas) ? data.faturasPagas : [];
       const pendentes = faturas.filter((f) => !f.pago && !pagas.some((p) => p.id_fatura === f.id_fatura));
+      
+      const valorTotalPendente = pendentes.reduce((acc, f) => acc + parseFloat(f.valor || 0), 0);
+
       setBoletos({
         todas: faturas, pagas, pendentes,
         totalPendentes: data.totalFaturasPendentes || pendentes.length,
         totalPagas: data.totalFaturasPagas || pagas.length,
         totalVencidas: data.totalFaturasVencidas || 0,
+        valorTotalPendente
       });
       if (pendentes.length === 0 && pagas.length > 0) setAbaBoletos('pagas');
       else setAbaBoletos('pendentes');
@@ -558,19 +567,19 @@ const FloatingWidget = () => {
             <div className="app-modal-layout">
               <aside className="app-sidebar">
                 <button className={`app-sidebar-item ${telaMeusDados === 'menu' ? 'active' : ''}`} onClick={() => setTelaMeusDados('menu')}>
-                  👤 Minha Conta
+                  <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="48 -912 864 864" width="18px" fill="#e06d13"><path d="M378-522q-42-42-42-102t42-102q42-42 102-42t102 42q42 42 42 102t-42 102q-42 42-102 42t-102-42ZM192-192v-96q0-23 12.5-43.5T239-366q55-32 116.29-49 61.29-17 124.5-17t124.71 17Q666-398 721-366q22 13 34.5 34t12.5 44v96H192Zm72-72h432v-24q0-5.18-3.03-9.41-3.02-4.24-7.97-6.59-46-28-98-42t-107-14q-55 0-107 14t-98 42q-5 4-8 7.72-3 3.73-3 8.28v24Zm267-309.21q21-21.21 21-51T530.79-675q-21.21-21-51-21T429-674.79q-21 21.21-21 51T429.21-573q21.21 21 51 21T531-573.21ZM480-624Zm0 360Z"/></svg> Minha Conta
                 </button>
-                <button className="app-sidebar-item" onClick={() => setTelaMeusDados('boletos')}>
-                  📄 Boletos
+                <button className={`app-sidebar-item ${telaMeusDados === 'boletos' ? 'active' : ''}`} onClick={() => setTelaMeusDados('boletos')}>
+                  <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="48 -912 864 864" width="18px" fill="#e06d13"><path d="M240-96q-46 0-71-24.5T144-192v-144h96v-528l57.6 58 57.6-58 57.6 58 57.6-58 57.6 58 57.6-58 57.6 58 57.6-58 57.6 58 57.6-58v660q0 47-31 77.5T708-96H240Zm468-72q16 0 26-9.5t10-26.5v-540H312v408h360v132q0 17 10 26.5t26 9.5ZM360-600v-72h216v72H360Zm0 120v-72h216v72H360Zm300-120q-14 0-25-10.29t-11-25.5q0-15.21 11-25.71t25.5-10.5q14.5 0 25 10.29t10.5 25.5q0 15.21-10.35 25.71T660-600Zm0 120q-14 0-25-10.29t-11-25.5q0-15.21 11-25.71t25.5-10.5q14.5 0 25 10.29t10.5 25.5q0 15.21-10.35 25.71T660-480ZM240-168h360v-96H216v72q0 17 3.5 20.5T240-168Zm-24 0v-96 96Z"/></svg> Boletos
                 </button>
-                <button className="app-sidebar-item" onClick={() => setTelaMeusDados('atendimentos')}>
-                  🎫 Atendimentos
+                <button className={`app-sidebar-item ${telaMeusDados === 'atendimentos' ? 'active' : ''}`} onClick={() => setTelaMeusDados('atendimentos')}>
+                  <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="48 -912 864 864" width="18px" fill="#e06d13"><path d="M432-144v-72h312v-267q0-110-76.78-187.5t-187-77.5Q370-748 293-670.5T216-483v227h-48q-29.7 0-50.85-21.74Q96-299.48 96-330v-74q0-23 13-41t35-23l3-51q9-63 38-117.5t73.5-94.5q44.5-40 101.49-62.5 56.99-22.5 120-22.5t119.81 22.56q56.81 22.55 101.5 62.5Q746-691 775-637t38 117l3 52q21 5 34.5 21.5T864-408v84q0 22-13.5 38.5T816-264v48q0 29.7-21.15 50.85Q773.7-144 744-144H432Zm-85.5-274.29q-10.5-10.29-10.5-25.5t10.29-25.71q10.29-10.5 25.5-10.5t25.71 10.29q10.5 10.29 10.5 25.5t-10.29 25.71q-10.29 10.5-25.5 10.5t-25.71-10.29Zm216 0q-10.5-10.29-10.5-25.5t10.29-25.71q10.29-10.5 25.5-10.5t25.71 10.29q10.5 10.29 10.5 25.5t-10.29 25.71q-10.29 10.5-25.5 10.5t-25.71-10.29ZM265-458q-9-97 55.7-167.5T482-696q82 0 142.5 55T694-504q-85 0-154.5-46.5T432-672q-14 71-57.5 127.5T265-458Z"/></svg> Atendimentos
                 </button>
-                <button className="app-sidebar-item" onClick={() => setTelaMeusDados('ordens')}>
-                  🔧 Ordens de Serviço
+                <button className={`app-sidebar-item ${telaMeusDados === 'ordens' ? 'active' : ''}`} onClick={() => setTelaMeusDados('ordens')}>
+                  <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="48 -912 864 864" width="18px" fill="#e06d13"><path d="M288-720v-72q-2-30 19.74-51T360-864h240q30.53 0 52.26 21Q674-822 672-792v72h47q21.71 0 39.36 12.5Q776-695 786-675l73 182q3 6 4 13t1 14v202q0 29.7-21.15 50.85Q821.7-192 792-192H168q-29.7 0-50.85-21.15Q96-234.3 96-264v-202q0-6.67 1.5-13.33 1.5-6.67 3.82-13.42L174-675q8.38-19.69 26.52-32.34Q218.67-720 241-720h47Zm72 0h240v-72H360v72Zm-72 228v-36h72v36h240v-36h72v36h109l-62-156H241l-62 156h109Zm0 72H168v156h624v-156H672v36h-72v-36H360v36h-72v-36Zm192-36Zm0-36Zm0 72Z"/></svg> Ordens de Serviço
                 </button>
                 <button className="app-sidebar-item logout" onClick={handleLogout}>
-                  🚪 Sair
+                  <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="48 -912 864 864" width="18px" fill="#e06d13"><path d="M216-144q-29.7 0-50.85-21.15Q144-186.3 144-216v-528q0-29.7 21.15-50.85Q186.3-816 216-816h264v72H216v528h264v72H216Zm432-168-51-51 81-81H384v-72h294l-81-81 51-51 168 168-168 168Z"/></svg> Sair
                 </button>
               </aside>
 
@@ -588,7 +597,7 @@ const FloatingWidget = () => {
                         </div>
                       </div>
                       <div className="status-badge">
-                        🛜 Seu plano está ativo
+                        <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="48 -912 864 864" width="18px" fill="#167b8a"><path d="m429-336 238-237-51-51-187 186-85-84-51 51 136 135Zm51 240q-79 0-149-30t-122.5-82.5Q156-261 126-331T96-480q0-80 30-149.5t82.5-122Q261-804 331-834t149-30q80 0 149.5 30t122 82.5Q804-699 834-629.5T864-480q0 79-30 149t-82.5 122.5Q699-156 629.5-126T480-96Zm0-72q130 0 221-91t91-221q0-130-91-221t-221-91q-130 0-221 91t-91 221q0 130 91 221t221 91Zm0-312Z"/></svg> Seu plano está ativo
                       </div>
                     </div>
 
@@ -617,7 +626,7 @@ const FloatingWidget = () => {
                       return (
                         <div className="section-card">
                           <div className="section-header">
-                            <h3 className="section-title">📋 Detalhes do Serviço</h3>
+                            <h3 className="section-title"><svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="48 -912 864 864" width="18px" fill="#e06d13"><path d="M168-192v-72h74q-45-40-71.5-95.5T144-480q0-101 61-177.5T360-758v76q-63 23-103.5 77T216-480q0 48 19.5 89.5T288-320v-64h72v192H168Zm646-312h-72q-5-41-23-75t-47-60v63h-72v-192h192v72h-75q41 37 66.5 86T814-504ZM687-48l-13-56q-14-5-26-12t-23-16l-56 17-32-55 42-40q-3-14-3-28.5t3-29.5l-42-39 32-55 55 16q11-10 23.5-17t26.5-12l13-57h64l14 56q17 7 29 14.5t22 15.5l54-16 32 55-41 38q2 17 2.5 31.5T861-209l41 39-32 55-55-17q-11 9-24 16.5T764-103l-13 55h-64Zm33-120q30 0 51-21t21-51q0-30-21-51t-51-21q-30 0-51 21t-21 51q0 30 21 51t51 21Z"/></svg> Detalhes do Serviço</h3>
                           </div>
                           <div className="info-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
                             {servico.id_cliente_servico && (
@@ -688,8 +697,8 @@ const FloatingWidget = () => {
                     {/* DADOS PESSOAIS */}
                     <div className="section-card">
                       <div className="section-header">
-                        <h3 className="section-title">👤 Dados Pessoais</h3>
-                        <button className="btn-edit" onClick={() => setTelaMeusDados('editar')}>✏️ Editar</button>
+                        <h3 className="section-title"><svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="48 -912 864 864" width="18px" fill="#e06d13"><path d="M378-474q-42-42-42-102v-138q0-22.5 15.75-38.25T390-768q13.8 0 26.22 7 12.42 7 19.78 20 8-11 19-18t25-7q14 0 25.5 7t19.5 19q8-12 19.5-19t25.38-7q23.12 0 38.62 15.75Q624-734.5 624-712v136q0 60-42 102t-102 42q-60 0-102-42Zm153-51.15q21-21.15 21-50.85v-96H408v96q0 29.7 21.21 50.85 21.21 21.15 51 21.15T531-525.15ZM192-144v-96q0-24 13-45t34-33q55-32 116-49t125-17q64 0 125 17t116 49q21 12 34 33t13 45v96H192Zm72-72h432v-24q0-4.93-3-8.97-3-4.03-8-7.03-47-29-99-42.5T480-312q-54 0-106 13.5T275-256q-5 3-8 7.03-3 4.04-3 8.97v24Zm216 0Zm0-456Z"/></svg> Dados Pessoais</h3>
+                        <button className="btn-edit" onClick={() => setTelaMeusDados('editar')}><svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="48 -912 864 864" width="18px" fill="#e06d13"><path d="M216-144q-29.7 0-50.85-21.15Q144-186.3 144-216v-528q0-30.11 21-51.56Q186-817 216-816h346l-72 72H216v528h528v-274l72-72v346q0 29.7-21.15 50.85Q773.7-144 744-144H216Zm264-336Zm-96 96v-153l354-354q11-11 24-16t26.5-5q14.4 0 27.45 5 13.05 5 23.99 15.78L891-840q11 11 16 24t5 27q0 14-5.02 27.09Q901.96-748.83 891-738L537-384H384Zm456-405-51-51 51 51ZM456-456h51l231-231-25-26-26-25-231 231v51Zm257-257-26-25 26 25 25 26-25-26Z"/></svg> Editar</button>
                       </div>
                       <div className="info-grid">
                         <div className="info-item">
@@ -714,7 +723,7 @@ const FloatingWidget = () => {
                     {/* ENDEREÇO DE INSTALAÇÃO */}
                     <div className="section-card">
                       <div className="section-header">
-                        <h3 className="section-title">📍 Endereço de Instalação</h3>
+                        <h3 className="section-title"><svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="48 -912 864 864" width="18px" fill="#e06d13"><path d="M531-501q21-21 21-51t-21-51q-21-21-51-21t-51 21q-21 21-21 51t21 51q21 21 51 21t51-21Zm-51 310q119-107 179.5-197T720-549q0-105-68.5-174T480-792q-103 0-171.5 69T240-549q0 71 60.5 161T480-191Zm0 95Q323-227 245.5-339.5T168-549q0-134 89-224.5T480-864q133 0 222.5 90.5T792-549q0 97-77 209T480-96Zm0-456Z"/></svg> Endereço de Instalação</h3>
                       </div>
                       <div className="info-grid">
                         <div className="info-item" style={{ gridColumn: '1 / -1' }}>
@@ -723,7 +732,11 @@ const FloatingWidget = () => {
                             {(() => {
                               const servicos = dashboard?.servicos ?? dashboard?.cliente?.servicos ?? [];
                               const servicoComEndereco = servicos.find(s => s.endereco_instalacao || s.endereco) || servicos[0];
-                              const enderecoBruto = servicoComEndereco?.endereco_instalacao || servicoComEndereco?.endereco;
+                              const enderecoBruto =
+                                dashboard?.endereco ||
+                                servicoComEndereco?.endereco_instalacao ||
+                                servicoComEndereco?.endereco_cadastral ||
+                                servicoComEndereco?.endereco;
                               return formatarEndereco(enderecoBruto);
                             })()}
                           </span>
@@ -734,7 +747,7 @@ const FloatingWidget = () => {
                     {/* STATUS E NOTIFICAÇÕES */}
                     <div className="status-grid">
                       <div className="status-box green">
-                        <div className="status-box-header">✅ Status da Conta <span style={{background:'#16a34a', color:'white', padding:'2px 8px', borderRadius:10, fontSize:10}}>Ativo</span></div>
+                        <div className="status-box-header"><svg xmlns="http://www.w3.org/2000/svg" height="19px" viewBox="24 -936 912 912" width="19px" fill="#16a34a"><path d="m426-303 261-262-84-85-177 175-74-72-85 85 159 159ZM228-100q-53.82 0-90.91-37.09Q100-174.18 100-228v-504q0-53.83 37.09-90.91Q174.18-860 228-860h504q53.83 0 90.91 37.09Q860-785.83 860-732v504q0 53.82-37.09 90.91Q785.83-100 732-100H228Zm0-128h504v-504H228v504Zm0-504v504-504Z"/></svg>Status da Conta <span style={{background:'#16a34a', color:'white', padding:'2px 8px', borderRadius:10, fontSize:10}}>Ativo</span></div>
                         <p>Sua conta está em dia e sem pendências.</p>
                         <button className="btn-block" onClick={() => setTelaMeusDados('boletos')}>Ver detalhes</button>
                       </div>
@@ -793,38 +806,118 @@ const FloatingWidget = () => {
                   </div>
                 )}
 
-                {/* TELA: BOLETOS */}
+                {/* TELA: BOLETOS (NOVO LAYOUT COM DATA DE PAGAMENTO) */}
                 {telaMeusDados === 'boletos' && (
                   <>
-                    <h2 style={{ fontSize: 18, marginBottom: 20 }}>Meus Boletos</h2>
-                    {boletosLoading && <div className="app-loading">Carregando...</div>}
+                    <h2 style={{ fontSize: 24, marginBottom: 20, color: '#0f172a' }}>Meus Boletos</h2>
+                    
+                    {boletosLoading && <div className="app-loading">Carregando boletos...</div>}
                     {boletosError && <div className="app-error">{boletosError}</div>}
+
                     {boletos && (
-                      <div className="app-boletos-lista">
-                        {(abaBoletos === 'pendentes' ? boletos.pendentes : boletos.pagas).map((fatura, index) => {
-                          const isPaga = abaBoletos === 'pagas';
-                          return (
-                            <div key={fatura.id_fatura || index} className={`app-boleto-card ${isPaga ? 'pago' : ''}`}>
-                              <div className="app-boleto-header">
-                                <span className="app-boleto-id">#{fatura.id_fatura}</span>
-                                <span className="app-boleto-valor">{formatarMoeda(fatura.valor || 0)}</span>
+                      <>
+                        <div className="boleto-tabs">
+                          <button
+                            className={`boleto-tab ${abaBoletos === 'pendentes' ? 'active' : ''}`}
+                            onClick={() => setAbaBoletos('pendentes')}
+                          >
+                            Em Aberto <span>{boletos.pendentes.length}</span>
+                          </button>
+                          <button
+                            className={`boleto-tab ${abaBoletos === 'pagas' ? 'active' : ''}`}
+                            onClick={() => setAbaBoletos('pagas')}
+                          >
+                            Pagas <span>{boletos.pagas.length}</span>
+                          </button>
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                          {(abaBoletos === 'pendentes' ? boletos.pendentes : boletos.pagas).map((fatura, index) => {
+                            const isPaga = abaBoletos === 'pagas';
+                            const isVencida = fatura.status === 'Vencido' || (!isPaga && fatura.status === 'Vencido');
+                            
+                            let statusClass = 'status-pendente';
+                            let badgeClass = 'a-vencer';
+                            let badgeText = 'A vencer';
+                            let BadgeIcon = FaClock;
+
+                            if (isPaga) {
+                              statusClass = 'status-pago';
+                              badgeClass = 'pago';
+                              badgeText = 'Pago';
+                              BadgeIcon = FaCheckCircle;
+                            } else if (isVencida) {
+                              statusClass = 'status-vencido';
+                              badgeClass = 'vencido';
+                              badgeText = 'Vencido';
+                              BadgeIcon = FaExclamationCircle;
+                            }
+                            
+                            return (
+                              <div key={fatura.id_fatura || index} className={`boleto-card-novo ${statusClass}`}>
+                                
+                                <div className="boleto-card-top">
+                                  <div className="boleto-id-group">
+                                    <div className="boleto-icon-bg">
+                                      <FaFileAlt />
+                                    </div>
+                                    <div className="boleto-id-text">
+                                      <h4>#{fatura.id_fatura}</h4>
+                                    </div>
+                                  </div>
+                                  <span className="boleto-valor">{formatarMoeda(fatura.valor || 0)}</span>
+                                </div>
+
+                                <div className="boleto-details-row">
+                                  <div className="boleto-date">
+                                    <FaCalendarAlt /> 
+                                    Vencimento: {formatarData(fatura.data_vencimento)}
+                                  </div>
+                                  
+                                  {/* AQUI ESTÁ A MÁGICA: Mostra a data de pagamento se ela existir */}
+                                  {isPaga && fatura.data_pagamento && (
+                                    <div className="boleto-date" style={{ color: '#16a34a', fontWeight: 600 }}>
+                                      <FaCheckCircle /> 
+                                      Pago em: {formatarData(fatura.data_pagamento)}
+                                    </div>
+                                  )}
+
+                                  <div className={`boleto-status-badge ${badgeClass}`}>
+                                    <BadgeIcon /> {badgeText}
+                                  </div>
+                                </div>
+
+                                <div className="boleto-actions">
+                                  {!isPaga && fatura.pix_copia_e_cola && (
+                                    <button className="btn-action pix" onClick={() => handleCopiarBoleto(fatura.pix_copia_e_cola)}>
+                                      <SiPix size={16} /> PIX
+                                    </button>
+                                  )}
+                                  {!isPaga && fatura.linha_digitavel && (
+                                    <button className="btn-action codigo" onClick={() => handleCopiarBoleto(fatura.linha_digitavel)}>
+                                      <FaBarcode size={16} /> Código
+                                    </button>
+                                  )}
+                                  {fatura.link && (
+                                    <a className="btn-action baixar" href={fatura.link} target="_blank" rel="noopener noreferrer">
+                                      <FaDownload size={16} /> {isPaga ? 'Comprovante' : 'Baixar'}
+                                    </a>
+                                  )}
+                                </div>
+
                               </div>
-                              <div className="app-boleto-datas">
-                                <span>Venc: {formatarData(fatura.data_vencimento)}</span>
-                                {isPaga && fatura.data_pagamento && <span>Pago em: {formatarData(fatura.data_pagamento)}</span>}
-                              </div>
-                              <div className="app-boleto-acoes">
-                                {!isPaga && fatura.pix_copia_e_cola && <button className="app-boleto-btn pix" onClick={() => handleCopiarBoleto(fatura.pix_copia_e_cola)}>PIX</button>}
-                                {!isPaga && fatura.linha_digitavel && <button className="app-boleto-btn codigo" onClick={() => handleCopiarBoleto(fatura.linha_digitavel)}>Código</button>}
-                                {fatura.link && <a className="app-boleto-btn link" href={fatura.link} target="_blank" rel="noopener noreferrer">{isPaga ? 'Comprovante' : 'Baixar'}</a>}
-                              </div>
+                            );
+                          })}
+
+                          {(abaBoletos === 'pendentes' ? boletos.pendentes : boletos.pagas).length === 0 && (
+                            <div className="app-empty">
+                              {abaBoletos === 'pendentes' 
+                                ? '🎉 Você não possui nenhum boleto em aberto. Tudo em dia!' 
+                                : 'Nenhum histórico de boleto pago encontrado.'}
                             </div>
-                          );
-                        })}
-                        {(abaBoletos === 'pendentes' ? boletos.pendentes : boletos.pagas).length === 0 && (
-                          <div className="app-empty">Nenhuma fatura encontrada.</div>
-                        )}
-                      </div>
+                          )}
+                        </div>
+                      </>
                     )}
                   </>
                 )}

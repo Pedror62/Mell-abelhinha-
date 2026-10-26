@@ -486,3 +486,195 @@
   .info-grid { grid-template-columns: 1fr; }
   .status-grid { grid-template-columns: 1fr; }
 }
+/* Fundo escuro atrás do modal */
+.meus-dados-overlay {
+  position: fixed !important;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(15, 23, 42, 0.6) !important;
+  z-index: 999999 !important; /* AQUI: Garante que o modal fique acima do botão, mas abaixo do Toast */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 20px !important;
+  backdrop-filter: blur(4px);
+}
+/* ============================================ */
+/* ESTILOS ESPECÍFICOS PARA BOLETOS             */
+/* ============================================ */
+
+/* Abas de Navegação (Em Aberto / Pagas) */
+.boleto-tabs {
+  display: flex;
+  gap: 24px;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 24px;
+}
+
+.boleto-tab {
+  background: transparent;
+  border: none;
+  padding: 12px 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.boleto-tab.active {
+  color: #2563eb;
+}
+
+.boleto-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #2563eb;
+  border-radius: 3px 3px 0 0;
+}
+
+.boleto-tab span {
+  background: #f1f5f9;
+  color: #475569;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.boleto-tab.active span {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+/* Cartão do Boleto */
+.boleto-card-novo {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+}
+
+/* Borda colorida na esquerda */
+.boleto-card-novo.status-vencido { border-left: 4px solid #ef4444; }
+.boleto-card-novo.status-pendente { border-left: 4px solid #eab308; }
+.boleto-card-novo.status-pago { border-left: 4px solid #22c55e; }
+
+/* Topo do Cartão (ID, Valor e Status) */
+.boleto-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.boleto-id-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.boleto-icon-bg {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.boleto-card-novo.status-vencido .boleto-icon-bg { background: #fee2e2; color: #ef4444; }
+.boleto-card-novo.status-pendente .boleto-icon-bg { background: #fef9c3; color: #eab308; }
+.boleto-card-novo.status-pago .boleto-icon-bg { background: #dcfce7; color: #22c55e; }
+
+.boleto-id-text h4 {
+  margin: 0;
+  font-size: 18px;
+  color: #0f172a;
+}
+
+.boleto-valor {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* Datas e Tags de Status */
+.boleto-details-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.boleto-date {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.boleto-status-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.boleto-status-badge.vencido { background: #fee2e2; color: #dc2626; }
+.boleto-status-badge.a-vencer { background: #fef9c3; color: #ca8a04; }
+.boleto-status-badge.pago { background: #dcfce7; color: #16a34a; }
+
+/* Botões de Ação */
+.boleto-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.btn-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  transition: 0.2s;
+  flex: 1;
+}
+
+.btn-action.pix { background: #16a34a; color: white; }
+.btn-action.pix:hover { background: #15803d; }
+
+.btn-action.codigo { background: #f1f5f9; color: #334155; }
+.btn-action.codigo:hover { background: #e2e8f0; }
+
+.btn-action.baixar { background: #2563eb; color: white; }
+.btn-action.baixar:hover { background: #1d4ed8; }
+
+/* Responsividade dos Botões */
+@media (max-width: 480px) {
+  .boleto-actions {
+    flex-direction: column;
+  }
+}

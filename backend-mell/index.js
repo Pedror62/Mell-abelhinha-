@@ -665,6 +665,8 @@ app.post('/api/app/dashboard', async (req, res) => {
       ultima_conexao: 'sim',
       incluir_alarmes: 'sim',
       incluir_contrato: 'sim',
+      // CORREÇÃO: pede explicitamente as relações, incluindo o endereço de instalação
+      relacoes: 'servicos,contratos,velocidade,ultima_conexao,endereco_instalacao',
     });
 
     const cadastroSeguro = sanitizarDadosCliente(cadastro);

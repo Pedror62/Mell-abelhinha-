@@ -1,0 +1,10 @@
+/* src/App.css ou src/index.css */
+/* Força o iframe/container do OmniChat a ter uma altura menor */
+#omni-chat-container, 
+.omni-chat-widget,
+iframe[src*="omnichat"] {
+  height: 500px !important; /* Reduz a altura */
+  max-height: 80vh !important;
+  bottom: 20px !important;
+  right: 20px !important;
+}
