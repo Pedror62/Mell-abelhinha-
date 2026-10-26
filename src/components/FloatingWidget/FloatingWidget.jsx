@@ -169,6 +169,9 @@ const FloatingWidget = () => {
     return () => clearTimeout(timerPulsar);
   }, []);
 
+  // CHAMADA DO HOOK DO OMNICHAT
+  useOmniChat(clienteLogado);
+
   // ============================================
   // FORMATADORES
   // ============================================
@@ -596,9 +599,36 @@ const FloatingWidget = () => {
                           <p>Seja bem-vindo(a) de volta!</p>
                         </div>
                       </div>
-                      <div className="status-badge">
-                        <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="48 -912 864 864" width="18px" fill="#167b8a"><path d="m429-336 238-237-51-51-187 186-85-84-51 51 136 135Zm51 240q-79 0-149-30t-122.5-82.5Q156-261 126-331T96-480q0-80 30-149.5t82.5-122Q261-804 331-834t149-30q80 0 149.5 30t122 82.5Q804-699 834-629.5T864-480q0 79-30 149t-82.5 122.5Q699-156 629.5-126T480-96Zm0-72q130 0 221-91t91-221q0-130-91-221t-221-91q-130 0-221 91t-91 221q0 130 91 221t221 91Zm0-312Z"/></svg> Seu plano está ativo
-                      </div>
+                      
+                      {/* BADGE DE STATUS DINÂMICO NO TOPO */}
+                      {(() => {
+                        const servico = dashboard?.servicos?.[0] || clienteLogado?.servico_detalhes;
+                        const statusOriginal = servico?.status || 'Verificando...';
+                        const statusLower = statusOriginal.toLowerCase();
+                        
+                        let badgeColor = '#16a34a';
+                        let badgeBg = '#dcfce7';
+                        let badgeText = 'Seu plano está ativo';
+                        let badgeIcon = '🛜';
+
+                        if (statusLower.includes('suspenso') || statusLower.includes('bloqueado')) {
+                          badgeColor = '#dc2626';
+                          badgeBg = '#fee2e2';
+                          badgeText = 'Serviço Suspenso';
+                          badgeIcon = '⚠️';
+                        } else if (statusLower.includes('cancelado') || statusLower.includes('inativo')) {
+                          badgeColor = '#475569';
+                          badgeBg = '#f1f5f9';
+                          badgeText = 'Serviço Cancelado';
+                          badgeIcon = '🚫';
+                        }
+
+                        return (
+                          <div className="status-badge" style={{ background: badgeBg, color: badgeColor }}>
+                            <span>{badgeIcon}</span> {badgeText}
+                          </div>
+                        );
+                      })()}
                     </div>
 
                     {/* CARD DO PLANO */}
@@ -614,81 +644,6 @@ const FloatingWidget = () => {
                               {formatarMoeda(servico?.valor || 0)}<span>/mês</span>
                             </div>
                             <span style={{ fontSize: 12, color: '#0284c7', fontWeight: 600 }}>{servico?.status || 'Verificando status...'}</span>
-                          </div>
-                        </div>
-                      );
-                    })()}
-
-                    {/* NOVO CARD: DETALHES DO SERVIÇO (DADOS COMPLETOS) */}
-                    {(() => {
-                      const servico = dashboard?.servicos?.[0];
-                      if (!servico) return null;
-                      return (
-                        <div className="section-card">
-                          <div className="section-header">
-                            <h3 className="section-title"><svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="48 -912 864 864" width="18px" fill="#e06d13"><path d="M168-192v-72h74q-45-40-71.5-95.5T144-480q0-101 61-177.5T360-758v76q-63 23-103.5 77T216-480q0 48 19.5 89.5T288-320v-64h72v192H168Zm646-312h-72q-5-41-23-75t-47-60v63h-72v-192h192v72h-75q41 37 66.5 86T814-504ZM687-48l-13-56q-14-5-26-12t-23-16l-56 17-32-55 42-40q-3-14-3-28.5t3-29.5l-42-39 32-55 55 16q11-10 23.5-17t26.5-12l13-57h64l14 56q17 7 29 14.5t22 15.5l54-16 32 55-41 38q2 17 2.5 31.5T861-209l41 39-32 55-55-17q-11 9-24 16.5T764-103l-13 55h-64Zm33-120q30 0 51-21t21-51q0-30-21-51t-51-21q-30 0-51 21t-21 51q0 30 21 51t51 21Z"/></svg> Detalhes do Serviço</h3>
-                          </div>
-                          <div className="info-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
-                            {servico.id_cliente_servico && (
-                              <div className="info-item">
-                                <label>ID do Serviço</label>
-                                <span>{servico.id_cliente_servico}</span>
-                              </div>
-                            )}
-                            {servico.numero_plano && (
-                              <div className="info-item">
-                                <label>Número do Plano</label>
-                                <span>{servico.numero_plano}</span>
-                              </div>
-                            )}
-                            {servico.velocidade_download && (
-                              <div className="info-item">
-                                <label>Velocidade Download</label>
-                                <span>{servico.velocidade_download}</span>
-                              </div>
-                            )}
-                            {servico.velocidade_upload && (
-                              <div className="info-item">
-                                <label>Velocidade Upload</label>
-                                <span>{servico.velocidade_upload}</span>
-                              </div>
-                            )}
-                            {servico.data_habilitacao_br && (
-                              <div className="info-item">
-                                <label>Data de Habilitação</label>
-                                <span>{servico.data_habilitacao_br}</span>
-                              </div>
-                            )}
-                            {servico.data_inicio_contrato && (
-                              <div className="info-item">
-                                <label>Início do Contrato</label>
-                                <span>{formatarData(servico.data_inicio_contrato)}</span>
-                              </div>
-                            )}
-                            {servico.data_fim_contrato && (
-                              <div className="info-item">
-                                <label>Fim do Contrato</label>
-                                <span>{formatarData(servico.data_fim_contrato)}</span>
-                              </div>
-                            )}
-                            {servico.vigencia_meses && (
-                              <div className="info-item">
-                                <label>Vigência</label>
-                                <span>{servico.vigencia_meses} meses</span>
-                              </div>
-                            )}
-                            {servico.tipo_cobranca_formatada && (
-                              <div className="info-item">
-                                <label>Tipo de Cobrança</label>
-                                <span>{servico.tipo_cobranca_formatada}</span>
-                              </div>
-                            )}
-                            {servico.ultima_conexao?.ultima_conexao && (
-                              <div className="info-item">
-                                <label>Última Conexão</label>
-                                <span>{formatarData(servico.ultima_conexao.ultima_conexao)}</span>
-                              </div>
-                            )}
                           </div>
                         </div>
                       );
@@ -744,19 +699,61 @@ const FloatingWidget = () => {
                       </div>
                     </div>
 
-                    {/* STATUS E NOTIFICAÇÕES */}
-                    <div className="status-grid">
-                      <div className="status-box green">
-                        <div className="status-box-header"><svg xmlns="http://www.w3.org/2000/svg" height="19px" viewBox="24 -936 912 912" width="19px" fill="#16a34a"><path d="m426-303 261-262-84-85-177 175-74-72-85 85 159 159ZM228-100q-53.82 0-90.91-37.09Q100-174.18 100-228v-504q0-53.83 37.09-90.91Q174.18-860 228-860h504q53.83 0 90.91 37.09Q860-785.83 860-732v504q0 53.82-37.09 90.91Q785.83-100 732-100H228Zm0-128h504v-504H228v504Zm0-504v504-504Z"/></svg>Status da Conta <span style={{background:'#16a34a', color:'white', padding:'2px 8px', borderRadius:10, fontSize:10}}>Ativo</span></div>
-                        <p>Sua conta está em dia e sem pendências.</p>
-                        <button className="btn-block" onClick={() => setTelaMeusDados('boletos')}>Ver detalhes</button>
-                      </div>
-                      <div className="status-box blue">
-                        <div className="status-box-header">🔔 Notificações</div>
-                        <p>Você tem {boletos?.pendentes?.length || 0} notificações importantes.</p>
-                        <button className="btn-block" onClick={() => setTelaMeusDados('atendimentos')}>Ver notificações</button>
-                      </div>
-                    </div>
+                    {/* STATUS DA CONTA E NOTIFICAÇÕES (AGORA DINÂMICO E REAL) */}
+                    {(() => {
+                      const servico = dashboard?.servicos?.[0] || clienteLogado?.servico_detalhes;
+                      const statusOriginal = servico?.status || '';
+                      const statusLower = statusOriginal.toLowerCase();
+                      const temFaturaVencida = boletos?.totalVencidas > 0;
+
+                      let boxClass = 'green';
+                      let statusTexto = 'Sua conta está em dia e sem pendências.';
+                      let badgeTexto = 'Ativo';
+                      let icon = '✅';
+
+                      if (statusLower.includes('suspenso') || statusLower.includes('bloqueado')) {
+                        boxClass = 'red';
+                        statusTexto = 'Seu serviço está suspenso. Regularize para voltar a navegar.';
+                        badgeTexto = 'Suspenso';
+                        icon = '⚠️';
+                      } else if (statusLower.includes('cancelado')) {
+                        boxClass = 'gray';
+                        statusTexto = 'Seu serviço foi cancelado.';
+                        badgeTexto = 'Cancelado';
+                        icon = '🚫';
+                      } else if (temFaturaVencida) {
+                        boxClass = 'orange';
+                        statusTexto = `Você possui ${boletos.totalVencidas} boleto(s) vencido(s). Regularize para evitar a suspensão.`;
+                        badgeTexto = 'Pendência';
+                        icon = '🟡';
+                      }
+
+                      return (
+                        <div className="status-grid">
+                          <div className={`status-box ${boxClass}`}>
+                            <div className="status-box-header">
+                              <span>{icon} Status da Conta</span>
+                              <span style={{
+                                background: boxClass === 'green' ? '#16a34a' : boxClass === 'red' ? '#dc2626' : boxClass === 'orange' ? '#f59e0b' : '#475569',
+                                color: 'white', padding: '2px 8px', borderRadius: 10, fontSize: 10
+                              }}>
+                                {badgeTexto}
+                              </span>
+                            </div>
+                            <p>{statusTexto}</p>
+                            <button className="btn-block" onClick={() => setTelaMeusDados('boletos')}>
+                              {temFaturaVencida ? 'Ver faturas pendentes' : 'Ver detalhes'}
+                            </button>
+                          </div>
+
+                          <div className="status-box blue">
+                            <div className="status-box-header">🔔 Notificações</div>
+                            <p>Você tem {boletos?.pendentes?.length || 0} notificações importantes.</p>
+                            <button className="btn-block" onClick={() => setTelaMeusDados('atendimentos')}>Ver notificações</button>
+                          </div>
+                        </div>
+                      );
+                    })()}
                   </>
                 )}
 
@@ -874,7 +871,7 @@ const FloatingWidget = () => {
                                     Vencimento: {formatarData(fatura.data_vencimento)}
                                   </div>
                                   
-                                  {/* AQUI ESTÁ A MÁGICA: Mostra a data de pagamento se ela existir */}
+                                  {/* Mostra a data de pagamento se ela existir */}
                                   {isPaga && fatura.data_pagamento && (
                                     <div className="boleto-date" style={{ color: '#16a34a', fontWeight: 600 }}>
                                       <FaCheckCircle /> 
