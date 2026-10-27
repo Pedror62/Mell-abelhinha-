@@ -1,3 +1,4 @@
+// server.js
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -13,6 +14,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 const PORT = process.env.PORT || 3001;
 const HUBSOFT_TIMEOUT_MS = Number(process.env.HUBSOFT_TIMEOUT_MS || 30000);
 let tokenCache = { value: null, expiresAt: 0 };
+
+// ============================================
+// CACHE DO TOKEN GEOSITE
+// ============================================
+let geositeTokenCache = { value: null, expiresAt: 0 };
 
 function hubsoftBaseUrl() {
   const value = process.env.HUBSOFT_BASE_URL?.trim().replace(/\/$/, '');
@@ -94,7 +100,7 @@ function sanitizarDadosCliente(data) {
 }
 
 // ============================================
-// NORMALIZA O ENDEREÇO (HubSoft pode devolver string, objeto ou campos aninhados)
+// NORMALIZA O ENDEREÇO
 // ============================================
 function normalizarEndereco(e) {
   if (!e) return null;
@@ -114,7 +120,7 @@ function normalizarEndereco(e) {
 }
 
 // ============================================
-// 1. AUTENTICAÇÃO TÉCNICA (TOKEN)
+// 1. AUTENTICAÇÃO TÉCNICA (TOKEN HUBSOFT)
 // ============================================
 async function getHubsoftToken(forceRefresh = false) {
   if (!forceRefresh && tokenCache.value && Date.now() < tokenCache.expiresAt) return tokenCache.value;
@@ -143,7 +149,45 @@ async function getHubsoftToken(forceRefresh = false) {
 }
 
 // ============================================
-// 2. ROTA: LOGIN DO CLIENTE (CENTRAL DO ASSINANTE)
+// 2. AUTENTICAÇÃO GEOSITE (TOKEN)
+// ============================================
+async function getGeositeToken(forceRefresh = false) {
+  if (!forceRefresh && geositeTokenCache.value && Date.now() < geositeTokenCache.expiresAt) {
+    return geositeTokenCache.value;
+  }
+
+  const username = process.env.GEOSITE_USERNAME?.trim();
+  const password = process.env.GEOSITE_PASSWORD?.trim();
+
+  if (!username || !password) {
+    throw new Error('GEOSITE_USERNAME e GEOSITE_PASSWORD não configurados no .env');
+  }
+
+  try {
+    const response = await axios.post(
+      'https://telecom.geosite.com.br/geosite-telecom-api/auth/generatetoken',
+      { username, password },
+      { headers: { 'Content-Type': 'application/json' }, timeout: 30000 }
+    );
+
+    const token = response.data?.token;
+    if (!token) throw new Error('GeoSite não retornou token.');
+
+    // GeoSite não informa expires_in, assume 55 minutos
+    geositeTokenCache = {
+      value: token,
+      expiresAt: Date.now() + 55 * 60 * 1000,
+    };
+
+    return token;
+  } catch (error) {
+    console.error(' ❌ Erro na Autenticação GeoSite:', error.response?.data || error.message);
+    throw new Error('Falha na autenticação com o GeoSite.');
+  }
+}
+
+// ============================================
+// 3. LOGIN DO CLIENTE (CENTRAL DO ASSINANTE)
 // ============================================
 app.post('/api/login-cliente', async (req, res) => {
   const { usuario, senha } = req.body;
@@ -160,10 +204,7 @@ app.post('/api/login-cliente', async (req, res) => {
 
     const response = await axios.post(
       `${baseUrl}/api/v1/integracao/cliente/autenticacao`,
-      {
-        usuario: usuario,
-        senha: senha
-      },
+      { usuario, senha },
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -185,25 +226,22 @@ app.post('/api/login-cliente', async (req, res) => {
           codigo_cliente: clienteRetorno.codigo_cliente,
           nome_razaosocial: clienteRetorno.nome_razaosocial,
           cpf_cnpj: clienteRetorno.cpf_cnpj || usuario,
-          email_principal: clienteRetorno.email_principal
-        }
+          email_principal: clienteRetorno.email_principal,
+        },
       });
-
     } else {
       return res.status(401).json({ error: 'Usuário ou senha inválidos.' });
     }
-
   } catch (error) {
     console.error(' ❌ Erro no login:', error.response?.data || error.message);
     const statusCode = error.response?.status || 401;
     const mensagem = error.response?.data?.msg || 'Usuário ou senha inválidos na HubSoft.';
-
     return res.status(statusCode).json({ error: mensagem });
   }
 });
 
 // ============================================
-// 3. FUNÇÕES AUXILIARES
+// 4. FUNÇÕES AUXILIARES HUBSOFT
 // ============================================
 function formatarStatusServico(status) {
   if (!status) return 'Status não disponível';
@@ -261,15 +299,14 @@ function obterCpfDoClienteDaFatura(fatura) {
 async function buscarDadosCliente(token, baseUrl, cpfLimpo) {
   try {
     console.log(' Buscando dados do cliente...');
-   const response = await axios.get(`${baseUrl}/api/v1/integracao/cliente`, {
-  params: { 
-    busca: 'cpf_cnpj', 
-    termo_busca: cpfLimpo,
-    // ESTE PARÂMETRO É CRUCIAL PARA VIR OS DADOS COMPLETOS DO CONTRATO E VELOCIDADE
-    relacoes: 'servicos,contratos,velocidade,ultima_conexao,endereco_instalacao'
-  },
-  headers: { Authorization: `Bearer ${token}` }
-});
+    const response = await axios.get(`${baseUrl}/api/v1/integracao/cliente`, {
+      params: {
+        busca: 'cpf_cnpj',
+        termo_busca: cpfLimpo,
+        relacoes: 'servicos,contratos,velocidade,ultima_conexao,endereco_instalacao',
+      },
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
     if (response.data?.clientes && response.data.clientes.length > 0) {
       const cliente = response.data.clientes[0];
@@ -300,7 +337,6 @@ async function buscarDadosCliente(token, baseUrl, cpfLimpo) {
           ipv4: servicoInfo.ipv4 || 'N/A',
           mac_addr: servicoInfo.mac_addr || 'N/A',
           referencia: servicoInfo.referencia || null,
-          // Agora que pedimos as relações, esses campos devem vir preenchidos
           endereco_cadastral: servicoInfo.endereco_cadastral || null,
           endereco_instalacao: servicoInfo.endereco_instalacao || null,
           endereco_cobranca: servicoInfo.endereco_cobranca || null,
@@ -308,7 +344,7 @@ async function buscarDadosCliente(token, baseUrl, cpfLimpo) {
           ultima_conexao_data: servicoInfo.ultima_conexao?.ultima_conexao || null,
           equipamento_conexao: servicoInfo.equipamento_conexao?.nome || null,
           equipamento_roteamento: servicoInfo.equipamento_roteamento?.nome || null,
-        } : null
+        } : null,
       };
     }
     return null;
@@ -416,7 +452,93 @@ async function buscarFaturasCliente(token, baseUrl, cpfLimpo) {
 }
 
 // ============================================
-// 4. ROTA DE BOLETOS
+// 5. ROTA DE VIABILIDADE GEOSITE (NOVA)
+// ============================================
+app.post('/api/viabilidade', async (req, res) => {
+  console.log('🌐 Rota /api/viabilidade chamada:', req.body);
+
+  try {
+    const { endereco, numero, complemento, bairro, cidade, uf, cep, raio } = req.body;
+
+    if (!endereco && !cep) {
+      return res.status(400).json({
+        status: 'error',
+        msg: 'Informe ao menos o endereço ou o CEP.',
+        temViabilidade: false,
+      });
+    }
+
+    // Monta o endereço no formato que o GeoSite aceita
+    const enderecoCompleto = [
+      endereco,
+      numero,
+      complemento,
+      bairro,
+      cidade && uf ? `${cidade} - ${uf}` : cidade,
+      cep,
+    ].filter(Boolean).join(', ');
+
+    console.log('📍 Endereço para consulta:', enderecoCompleto);
+
+    const token = await getGeositeToken();
+
+    const response = await axios.get(
+      'https://telecom.geosite.com.br/geosite-telecom-api/viabilidade/caixas',
+      {
+        params: {
+          raio: raio || 200,
+          endereco: enderecoCompleto,
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        timeout: 30000,
+      }
+    );
+
+    const data = response.data || {};
+
+    // GeoSite pode retornar em diferentes chaves dependendo da versão
+    const caixas =
+      data.caixas ||
+      data.records ||
+      data.features ||
+      (Array.isArray(data) ? data : []);
+
+    const temViabilidade = Array.isArray(caixas) && caixas.length > 0;
+
+    console.log(`✅ Viabilidade: ${temViabilidade ? 'SIM' : 'NÃO'} (${caixas.length} caixas)`);
+
+    return res.json({
+      status: 'success',
+      temViabilidade,
+      totalCaixas: caixas.length,
+      caixas: caixas.slice(0, 5),
+      enderecoConsultado: enderecoCompleto,
+      raio: raio || 200,
+      raw: temViabilidade ? undefined : data,
+    });
+  } catch (error) {
+    console.error('Erro na viabilidade:', error.response?.data || error.message);
+
+    const statusCode = error.response?.status || 500;
+    const mensagem =
+      error.response?.data?.message ||
+      error.response?.data?.msg ||
+      error.message ||
+      'Erro ao consultar viabilidade.';
+
+    return res.status(statusCode).json({
+      status: 'error',
+      msg: mensagem,
+      temViabilidade: false,
+    });
+  }
+});
+
+// ============================================
+// 6. ROTA DE BOLETOS
 // ============================================
 app.post('/api/consultar-boleto', async (req, res) => {
   try {
@@ -571,7 +693,7 @@ async function hubsoftPost(pathname, body = {}) {
 }
 
 // ============================================
-// 5. ROTAS DE DADOS HUBSOFT (backend proxy seguro)
+// 7. ROTAS PROXY HUBSOFT
 // ============================================
 const CLIENT_PARAMS = ['busca', 'termo_busca', 'limit', 'inativo', 'cancelado', 'ultima_conexao', 'incluir_alarmes', 'incluir_contrato'];
 const CLIENT_ALL_PARAMS = ['pagina', 'itens_por_pagina', 'data_inicio', 'data_fim', 'cancelado', 'possui_pacote', 'codigo_pacote', 'servico_status', 'relacoes'];
@@ -634,7 +756,9 @@ app.get('/api/hubsoft/cliente-completo', async (req, res) => {
   } catch (error) { return sendHubsoftError(res, error); }
 });
 
-// Dashboard do cliente: usado pelo FloatingWidget.jsx após o login.
+// ============================================
+// 8. DASHBOARD DO CLIENTE
+// ============================================
 app.post('/api/app/dashboard', async (req, res) => {
   const cliente = req.body?.cliente || req.body || {};
   const codigoCliente = cliente.codigo_cliente || req.body?.codigo_cliente;
@@ -643,7 +767,7 @@ app.post('/api/app/dashboard', async (req, res) => {
 
   if (!codigoCliente && !cpfCnpj && !idClienteServico) {
     return res.status(400).json({
-      error: 'Informe codigo_cliente, cpf_cnpj ou id_cliente_servico para carregar o dashboard.'
+      error: 'Informe codigo_cliente, cpf_cnpj ou id_cliente_servico para carregar o dashboard.',
     });
   }
 
@@ -665,7 +789,6 @@ app.post('/api/app/dashboard', async (req, res) => {
       ultima_conexao: 'sim',
       incluir_alarmes: 'sim',
       incluir_contrato: 'sim',
-      // CORREÇÃO: pede explicitamente as relações, incluindo o endereço de instalação
       relacoes: 'servicos,contratos,velocidade,ultima_conexao,endereco_instalacao',
     });
 
@@ -702,7 +825,6 @@ app.post('/api/app/dashboard', async (req, res) => {
       console.warn('Aviso: não foi possível carregar ordens de serviço:', error.message);
     }
 
-    // ENDEREÇO: prioriza instalação, depois cadastral, depois cobrança
     const servicoRef =
       (clienteHubsoft?.servicos || []).find((s) => s.endereco_instalacao) ||
       (clienteHubsoft?.servicos || []).find((s) => s.endereco_cadastral) ||
@@ -712,14 +834,6 @@ app.post('/api/app/dashboard', async (req, res) => {
       servicoRef?.endereco_instalacao ||
       servicoRef?.endereco_cadastral ||
       servicoRef?.endereco_cobranca
-    );
-
-    // Log de depuração (remova depois de confirmar)
-    console.log(
-      ' 📍 DEBUG endereço -> campos do serviço:',
-      servicoRef ? Object.keys(servicoRef) : null,
-      '| endereço normalizado:',
-      endereco
     );
 
     return res.json({
@@ -738,9 +852,17 @@ app.post('/api/app/dashboard', async (req, res) => {
 });
 
 // ============================================
-// 6. ROTAS FINAIS
+// 9. ROTAS FINAIS
 // ============================================
-app.get('/api/health', (req, res) => res.json({ status: 'OK', message: 'Servidor está rodando!', hubsoft: Boolean(process.env.HUBSOFT_BASE_URL) }));
+app.get('/api/health', (req, res) =>
+  res.json({
+    status: 'OK',
+    message: 'Servidor está rodando!',
+    hubsoft: Boolean(process.env.HUBSOFT_BASE_URL),
+    geosite: Boolean(process.env.GEOSITE_USERNAME && process.env.GEOSITE_PASSWORD),
+  })
+);
+
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'), (err) => {
     if (err) res.status(200).send('Servidor rodando! Acesse /api/health para testar.');
@@ -750,4 +872,6 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
   console.log(` Servidor backend pronto e rodando na porta ${PORT}`);
   console.log(` Teste: http://localhost:${PORT}/api/health`);
+  console.log(`\n Rotas GeoSite:`);
+  console.log(`   POST /api/viabilidade - Consulta caixas via GeoSite`);
 });

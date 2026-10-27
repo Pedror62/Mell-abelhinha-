@@ -4,16 +4,19 @@ import "./App.css";
 // Importação dos componentes da aplicação
 import Navbar from "./components/Navbar/Navbar";
 import Hero from "./components/Hero/Hero";
-import ConsultaPlano from "./components/ConsultaPlano/ConsultaPlano";
+//import ConsultaPlano from "./components/ConsultaPlano/ConsultaPlano";
 import Planos from "./components/Planos/Planos";
 import Ecossistema from "./components/Ecossistema/Ecossistema";
 import CtaEndereco from "./components/CtaEndereco/CtaEndereco";
-import CidadesAtendidas from "./components/CidadesAtendidas/CidadesAtendidas";
+// import CidadesAtendidas from "./components/CidadesAtendidas/CidadesAtendidas";
 import QuemSomos from "./components/QuemSomos/QuemSomos";
 import Faq from "./components/Faq/Faq";
 import Footer from "./components/Footer/Footer";
 import FloatingWidget from "./components/FloatingWidget/FloatingWidget";
-import ChatButton from "./components/ChatButton/ChatButton"; // Botão exclusivo do chat
+
+// ⭐ IMPORTANDO O BOTÃO DO CHAT
+import ChatButton from "./components/ChatButton/ChatButton"; 
+
 import { useOmniChat } from "./hooks/useOmniChat";
 
 function App() {
@@ -26,9 +29,9 @@ function App() {
       <Hero />
       <Planos />
       <Ecossistema />
-      <ConsultaPlano />
+      {/*<ConsultaPlano />*/}
       <CtaEndereco />
-      <CidadesAtendidas />
+      {/*<CidadesAtendidas /> */}
       <QuemSomos />
       <Faq />
       <Footer />
@@ -36,7 +39,7 @@ function App() {
       {/* Widget de Meus Dados (Direita) */}
       <FloatingWidget />
      
-      {/* Botão Exclusivo do Chat (Esquerda) */}
+      {/* ⭐ Botão Exclusivo do Chat (Esquerda) */}
       <ChatButton />
     </div>
   );

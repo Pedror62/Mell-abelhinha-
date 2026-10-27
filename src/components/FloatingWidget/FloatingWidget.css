@@ -1,5 +1,5 @@
 /* ============================================ */
-/* BOTÃO PRINCIPAL                              */
+/* BOTÃO PRINCIPAL (AZUL)                       */
 /* ============================================ */
 .floating-button {
   position: fixed;
@@ -19,11 +19,18 @@
   transition: transform .25s ease, box-shadow .25s ease, background .25s ease;
   z-index: 99999;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .floating-button:hover {
   transform: scale(1.06);
   box-shadow: 0 10px 28px rgba(24, 66, 173, 0.42);
+}
+
+.floating-button:focus-visible {
+  outline: 3px solid #01A1DD;
+  outline-offset: 3px;
 }
 
 .floating-button.active {
@@ -52,7 +59,7 @@
 
 @keyframes floatingPulse {
   0%, 100% { box-shadow: 0 8px 22px rgba(24, 66, 173, 0.32), 0 0 0 0 rgba(29, 78, 216, 0.55); }
-  50% { box-shadow: 0 8px 22px rgba(24, 66, 173, 0.32), 0 0 0 14px rgba(29, 78, 216, 0); }
+  50%      { box-shadow: 0 8px 22px rgba(24, 66, 173, 0.32), 0 0 0 14px rgba(29, 78, 216, 0); }
 }
 
 /* ============================================ */
@@ -71,7 +78,7 @@
   overflow: hidden !important;
   display: flex !important;
   flex-direction: column !important;
-  z-index: 99999 !important;
+  z-index: 99998 !important;
   animation: widgetSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif !important;
   box-sizing: border-box !important;
@@ -120,6 +127,12 @@
   transform: scale(1.08) !important;
 }
 
+.widget-close-x:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
 .widget-options {
   padding: 10px 8px 12px !important;
   overflow-y: auto !important;
@@ -145,6 +158,7 @@
   text-align: left !important;
   transition: background 0.2s ease, transform 0.2s ease !important;
   font-family: inherit !important;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .widget-card:hover {
@@ -154,6 +168,11 @@
 
 .widget-card:active {
   transform: scale(0.985) !important;
+}
+
+.widget-card:focus-visible {
+  outline: 2px solid #01A1DD;
+  outline-offset: 2px;
 }
 
 .widget-card, .widget-card:link, .widget-card:visited, .widget-card:hover, .widget-card:active {
@@ -323,23 +342,26 @@
   margin-top: 10px;
 }
 
-/* Responsivo */
-@media (max-width: 480px) {
+/* ============================================ */
+/* RESPONSIVO — BOTÃO AZUL                      */
+/* ============================================ */
+@media (max-width: 768px) {
+  .floating-button {
+    width: 55px !important;
+    height: 55px !important;
+    bottom: 20px !important; 
+    right: 20px !important;
+    left: auto !important;
+    top: auto !important;
+    font-size: 24px !important;
+  }
+
   .widget-popup {
     right: 16px !important;
     left: 16px !important;
-    bottom: 88px !important;
+    bottom: 85px !important; 
     width: auto !important;
     max-width: none !important;
-    max-height: calc(100vh - 120px) !important;
-  }
-  .floating-button {
-    width: 52px;
-    height: 52px;
-    bottom: 20px;
-    right: 20px;
-  }
-  .floating-button-icon {
-    font-size: 24px;
+    max-height: calc(100dvh - 120px) !important;
   }
 }
