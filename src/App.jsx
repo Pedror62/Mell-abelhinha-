@@ -15,7 +15,11 @@ import Footer from "./components/Footer/Footer";
 import FloatingWidget from "./components/FloatingWidget/FloatingWidget";
 
 // ⭐ IMPORTANDO O BOTÃO DO CHAT
-import ChatButton from "./components/ChatButton/ChatButton"; 
+import ChatButton from "./components/ChatButton/ChatButton";
+
+// ⭐ CONTEXT E MODAL DE VIABILIDADE (compartilhado entre Hero e Ecossistema)
+import { ViabilidadeProvider } from "./context/ViabilidadeContext";
+import ViabilidadeModal from "./components/ViabilidadeModal/ViabilidadeModal";
 
 import { useOmniChat } from "./hooks/useOmniChat";
 
@@ -24,24 +28,29 @@ function App() {
   useOmniChat(null);
 
   return (
-    <div className="App">
-      <Navbar />
-      <Hero />
-      <Planos />
-      <Ecossistema />
-      {/*<ConsultaPlano />*/}
-      <CtaEndereco />
-      {/*<CidadesAtendidas /> */}
-      <QuemSomos />
-      <Faq />
-      <Footer />
+    <ViabilidadeProvider>
+      <div className="App">
+        <Navbar />
+        <Hero />
+        <Planos />
+        <Ecossistema />
+        {/*<ConsultaPlano />*/}
+        <CtaEndereco />
+        {/*<CidadesAtendidas /> */}
+        <QuemSomos />
+        <Faq />
+        <Footer />
 
-      {/* Widget de Meus Dados (Direita) */}
-      <FloatingWidget />
-     
-      {/* ⭐ Botão Exclusivo do Chat (Esquerda) */}
-      <ChatButton />
-    </div>
+        {/* Widget de Meus Dados (Direita) */}
+        <FloatingWidget />
+
+        {/* ⭐ Botão Exclusivo do Chat (Esquerda) */}
+        <ChatButton />
+
+        {/* ⭐ Modal de Viabilidade global (usado pelo Hero e pelo Ecossistema) */}
+        <ViabilidadeModal />
+      </div>
+    </ViabilidadeProvider>
   );
 }
 

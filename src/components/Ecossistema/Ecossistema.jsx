@@ -1,8 +1,11 @@
 import React from 'react';
-import './Ecossistema.css';
-import experienciaImg from '../../assets/imagemcelular.png'; 
+import './Ecossistema.css'; // 👈 O CSS correto do Ecossistema
+import experienciaImg from '../../assets/imagemcelular.png';
+import { useViabilidade } from '../../context/ViabilidadeContext';
 
 export const Ecossistema = () => {
+  const { abrirModal } = useViabilidade();
+
   const beneficios = [
     {
       id: 'watch',
@@ -88,9 +91,10 @@ export const Ecossistema = () => {
             de entretenimento, educação e desenvolvimento.
           </p>
 
+          
+
           {/* Wrapper da imagem do Celular */}
           <div className="ecossistema-phone-wrapper">
-            {/* CORREÇÃO: Usamos {experienciaImg} em vez da string "/assets/..." */}
             <img 
               src={experienciaImg} 
               alt="Ecossistema Mell no celular" 

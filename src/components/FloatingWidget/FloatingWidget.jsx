@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './FloatingWidget.css';
 import './MeusDados.css';
-import { FaWhatsapp, FaFileAlt, FaCalendarAlt, FaExclamationCircle, FaCheckCircle, FaClock, FaBarcode, FaDownload } from 'react-icons/fa';
+import { FaWhatsapp, FaFileAlt, FaCalendarAlt, FaExclamationCircle, FaCheckCircle, FaClock, FaBarcode, FaDownload, FaLockOpen } from 'react-icons/fa';
 import { SiPix } from 'react-icons/si';
 
 import BoletoModal from './BoletoModal';
@@ -84,6 +84,11 @@ const FloatingWidget = () => {
   const [dashboard, setDashboard] = useState(null);
   const [dashboardLoading, setDashboardLoading] = useState(false);
   const [dashboardError, setDashboardError] = useState('');
+
+  // ============================================
+  // DESBLOQUEIO EM CONFIANÇA
+  // ============================================
+  const [desbloqueioLoading, setDesbloqueioLoading] = useState(false);
 
   // ============================================
   // INDIQUE UM AMIGO
@@ -174,23 +179,14 @@ const FloatingWidget = () => {
   useOmniChat(clienteLogado);
 
   // ============================================
-  // ⭐ ESCONDE O BOTÃO NATIVO DO ATENDERBEM
+  // ESCONDE O BOTÃO NATIVO DO ATENDERBEM
   // ============================================
   useEffect(() => {
-    // O AtenderBem injeta um botão próprio na tela. Vamos escondê-lo
-    // para não sobrepor o nosso FloatingWidget.
     const hideNativeChat = setInterval(() => {
       const selectors = [
-        '.omni-chat-button',
-        '#omni-chat-button',
-        '[class*="omniChatButton"]',
-        '[id*="omniChatButton"]',
-        '[class*="omni-chat-launcher"]',
-        '[id*="omni-chat-launcher"]',
-        '[class*="omnichat"]',
-        '[id*="omnichat"]',
-        '#chat-widget-container',
-        '.chat-widget-container',
+        '.omni-chat-button', '#omni-chat-button', '[class*="omniChatButton"]',
+        '[id*="omniChatButton"]', '[class*="omni-chat-launcher"]', '[id*="omni-chat-launcher"]',
+        '[class*="omnichat"]', '[id*="omnichat"]', '#chat-widget-container', '.chat-widget-container',
       ];
 
       selectors.forEach((sel) => {
@@ -198,13 +194,11 @@ const FloatingWidget = () => {
           if (el.tagName === 'IFRAME') return;
           if (el.style.display === 'none') return;
           if (el.dataset.hiddenByFloating === 'true') return;
-
           el.style.display = 'none';
           el.dataset.hiddenByFloating = 'true';
         });
       });
     }, 500);
-
     return () => clearInterval(hideNativeChat);
   }, []);
 
@@ -245,9 +239,7 @@ const FloatingWidget = () => {
 
     const partes = [
       enderecoObj.logradouro || enderecoObj.rua || enderecoObj.endereco,
-      enderecoObj.numero,
-      enderecoObj.complemento,
-      enderecoObj.bairro,
+      enderecoObj.numero, enderecoObj.complemento, enderecoObj.bairro,
       enderecoObj.cidade ? `${enderecoObj.cidade}${enderecoObj.uf ? `/${enderecoObj.uf}` : ''}` : null,
       enderecoObj.cep ? `CEP: ${enderecoObj.cep}` : null
     ].filter(Boolean);
@@ -285,6 +277,45 @@ const FloatingWidget = () => {
       console.error('Erro ao carregar dashboard:', err);
       setDashboardError(err.message || 'Erro ao carregar informações.');
     } finally { setDashboardLoading(false); }
+  };
+
+  // ============================================
+  // DESBLOQUEIO EM CONFIANÇA
+  // ============================================
+  const handleDesbloqueioConfianca = async (id_cliente_servico) => {
+    if (!id_cliente_servico) {
+      mostrarToast('ID do serviço não encontrado.', 'error');
+      return;
+    }
+
+    setDesbloqueioLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/api/app/desbloqueio-confianca`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id_cliente_servico: Number(id_cliente_servico),
+          dias_desbloqueio: 1, // Desbloqueio padrão de 1 dia
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || data.status !== 'success') {
+        throw new Error(data.error || data.msg || 'Erro ao realizar desbloqueio.');
+      }
+
+      mostrarToast(data.msg || 'Desbloqueio realizado com sucesso!', 'success');
+
+      // Recarrega o dashboard para atualizar o status do serviço
+      carregarDashboard(clienteLogado);
+
+    } catch (error) {
+      console.error('Erro no desbloqueio:', error);
+      mostrarToast(error.message || 'Erro ao realizar desbloqueio.', 'error');
+    } finally {
+      setDesbloqueioLoading(false);
+    }
   };
 
   // ============================================
@@ -608,7 +639,7 @@ const FloatingWidget = () => {
                   <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="48 -912 864 864" width="18px" fill="#e06d13"><path d="M378-522q-42-42-42-102t42-102q42-42 102-42t102 42q42 42 42 102t-42 102q-42 42-102 42t-102-42ZM192-192v-96q0-23 12.5-43.5T239-366q55-32 116.29-49 61.29-17 124.5-17t124.71 17Q666-398 721-366q22 13 34.5 34t12.5 44v96H192Zm72-72h432v-24q0-5.18-3.03-9.41-3.02-4.24-7.97-6.59-46-28-98-42t-107-14q-55 0-107 14t-98 42q-5 4-8 7.72-3 3.73-3 8.28v24Zm267-309.21q21-21.21 21-51T530.79-675q-21.21-21-51-21T429-674.79q-21 21.21-21 51T429.21-573q21.21 21 51 21T531-573.21ZM480-624Zm0 360Z"/></svg> Minha Conta
                 </button>
                 <button className={`app-sidebar-item ${telaMeusDados === 'boletos' ? 'active' : ''}`} onClick={() => setTelaMeusDados('boletos')}>
-                  <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="48 -912 864 864" width="18px" fill="#e06d13"><path d="M240-96q-46 0-71-24.5T144-192v-144h96v-528l57.6 58 57.6-58 57.6 58 57.6-58 57.6 58 57.6-58 57.6 58 57.6-58 57.6 58 57.6-58 57.6 58 57.6-58 57.6 58v660q0 47-31 77.5T708-96H240Zm468-72q16 0 26-9.5t10-26.5v-540H312v408h360v132q0 17 10 26.5t26 9.5ZM360-600v-72h216v72H360Zm0 120v-72h216v72H360Zm300-120q-14 0-25-10.29t-11-25.5q0-15.21 11-25.71t25.5-10.5q14.5 0 25 10.29t10.5 25.5q0 15.21-10.35 25.71T660-600Zm0 120q-14 0-25-10.29t-11-25.5q0-15.21 11-25.71t25.5-10.5q14.5 0 25 10.29t10.5 25.5q0 15.21-10.35 25.71T660-480ZM240-168h360v-96H216v72q0 17 3.5 20.5T240-168Zm-24 0v-96 96Z"/></svg> Boletos
+                  <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="48 -912 864 864" width="18px" fill="#e06d13"><path d="M240-96q-46 0-71-24.5T144-192v-144h96v-528l57.6 58 57.6-58 57.6 58 57.6-58 57.6 58 57.6-58 57.6 58 57.6-58 57.6 58 57.6-58v660q0 47-31 77.5T708-96H240Zm468-72q16 0 26-9.5t10-26.5v-540H312v408h360v132q0 17 10 26.5t26 9.5ZM360-600v-72h216v72H360Zm0 120v-72h216v72H360Zm300-120q-14 0-25-10.29t-11-25.5q0-15.21 11-25.71t25.5-10.5q14.5 0 25 10.29t10.5 25.5q0 15.21-10.35 25.71T660-600Zm0 120q-14 0-25-10.29t-11-25.5q0-15.21 11-25.71t25.5-10.5q14.5 0 25 10.29t10.5 25.5q0 15.21-10.35 25.71T660-480ZM240-168h360v-96H216v72q0 17 3.5 20.5T240-168Zm-24 0v-96 96Z"/></svg> Boletos
                 </button>
                 <button className={`app-sidebar-item ${telaMeusDados === 'atendimentos' ? 'active' : ''}`} onClick={() => setTelaMeusDados('atendimentos')}>
                   <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="48 -912 864 864" width="18px" fill="#e06d13"><path d="M432-144v-72h312v-267q0-110-76.78-187.5t-187-77.5Q370-748 293-670.5T216-483v227h-48q-29.7 0-50.85-21.74Q96-299.48 96-330v-74q0-23 13-41t35-23l3-51q9-63 38-117.5t73.5-94.5q44.5-40 101.49-62.5 56.99-22.5 120-22.5t119.81 22.56q56.81 22.55 101.5 62.5Q746-691 775-637t38 117l3 52q21 5 34.5 21.5T864-408v84q0 22-13.5 38.5T816-264v48q0 29.7-21.15 50.85Q773.7-144 744-144H432Zm-85.5-274.29q-10.5-10.29-10.5-25.5t10.29-25.71q10.29-10.5 25.5-10.5t25.71 10.29q10.5 10.29 10.5 25.5t-10.29 25.71q-10.29 10.5-25.5 10.5t-25.71-10.29Zm216 0q-10.5-10.29-10.5-25.5t10.29-25.71q10.29-10.5 25.5-10.5t25.71 10.29q10.5 10.29 10.5 25.5t-10.29 25.71q-10.29 10.5-25.5 10.5t-25.71-10.29ZM265-458q-9-97 55.7-167.5T482-696q82 0 142.5 55T694-504q-85 0-154.5-46.5T432-672q-14 71-57.5 127.5T265-458Z"/></svg> Atendimentos
@@ -729,6 +760,56 @@ const FloatingWidget = () => {
                         </div>
                       </div>
                     </div>
+
+                    {/* CARD DE DESBLOQUEIO EM CONFIANÇA */}
+                    {(() => {
+                      const servico = dashboard?.servicos?.[0] || clienteLogado?.servico_detalhes;
+                      const statusOriginal = servico?.status || '';
+                      const statusLower = statusOriginal.toLowerCase();
+                      const estaSuspenso = statusLower.includes('suspenso') || statusLower.includes('bloqueado');
+
+                      if (!estaSuspenso) return null;
+
+                      return (
+                        <div className="section-card" style={{ borderLeft: '4px solid #f59e0b', background: '#fffbeb' }}>
+                          <div className="section-header">
+                            <h3 className="section-title" style={{ color: '#b45309' }}>
+                              <FaLockOpen style={{ marginRight: 8 }} /> Desbloqueio em Confiança
+                            </h3>
+                          </div>
+                          <div style={{ padding: '0 8px 16px' }}>
+                            <p style={{ fontSize: 14, color: '#78350f', marginBottom: 16 }}>
+                              Seu serviço está suspenso por débito. Você pode solicitar um desbloqueio em confiança para voltar a navegar agora mesmo.
+                            </p>
+                            <button
+                              onClick={() => handleDesbloqueioConfianca(servico?.id_cliente_servico)}
+                              disabled={desbloqueioLoading}
+                              className="btn-block"
+                              style={{
+                                background: desbloqueioLoading ? '#d1d5db' : '#f59e0b',
+                                color: 'white',
+                                fontWeight: 600,
+                                padding: '12px',
+                                borderRadius: '8px',
+                                border: 'none',
+                                cursor: desbloqueioLoading ? 'not-allowed' : 'pointer',
+                                fontSize: '14px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '8px'
+                              }}
+                            >
+                              {desbloqueioLoading ? 'Processando...' : (
+                                <>
+                                  <FaLockOpen /> Desbloquear por 1 dia
+                                </>
+                              )}
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })()}
 
                     {(() => {
                       const servico = dashboard?.servicos?.[0] || clienteLogado?.servico_detalhes;
@@ -938,7 +1019,7 @@ const FloatingWidget = () => {
                           {(abaBoletos === 'pendentes' ? boletos.pendentes : boletos.pagas).length === 0 && (
                             <div className="app-empty">
                               {abaBoletos === 'pendentes'
-                                ? '🎉 Você não possui nenhum boleto em aberto. Tudo em dia!'
+                                ? ' Você não possui nenhum boleto em aberto. Tudo em dia!'
                                 : 'Nenhum histórico de boleto pago encontrado.'}
                             </div>
                           )}

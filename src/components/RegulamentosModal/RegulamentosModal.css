@@ -1,568 +1,353 @@
-/* InstitucionalModal.css */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap');
 
 /* ==========================================
-   MODAL OVERLAY
+   VARIÁVEIS DA MARCA (Brand Guide)
    ========================================== */
+:root {
+  --brand-blue: #01A1DD;
+  --brand-orange: #FF801F;
+  --brand-dark-blue: #035270;
+  --brand-gray: #6B7280;
+  --brand-white: #FFFFFF;
+  --bg-gray: #F9FAFB;
+  --border-color: #E5E7EB;
+  --font-title: 'Manrope', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
 
-.institucional-modal-overlay {
+/* ==========================================
+   OVERLAY E MODAL
+   ========================================== */
+.regulamentos-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(2, 18, 41, 0.85);
-  backdrop-filter: blur(8px);
+  background: rgba(3, 82, 112, 0.75);
+  backdrop-filter: blur(5px);
   z-index: 10000;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
   box-sizing: border-box;
-  animation: institucionalFadeIn 0.3s ease-out;
+  animation: fadeIn 0.2s ease-out;
 }
 
-.institucional-modal-content {
-  background: #ffffff;
+.regulamentos-modal {
+  background: var(--brand-white);
   width: 100%;
-  max-width: 800px;
+  max-width: 850px;
   max-height: 90vh;
-  border-radius: 24px;
-  padding: 32px;
-  position: relative;
-  animation: institucionalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  overflow: hidden;
-}
-
-.institucional-modal-scroll {
-  overflow-y: auto;
-  max-height: calc(90vh - 64px);
-  padding-right: 4px;
-}
-
-.institucional-modal-scroll::-webkit-scrollbar {
-  width: 4px;
-}
-
-.institucional-modal-scroll::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 10px;
-}
-
-.institucional-modal-scroll::-webkit-scrollbar-thumb {
-  background: #00A1DC;
-  border-radius: 10px;
-}
-
-/* Botão fechar */
-.institucional-modal-close {
-  position: sticky;
-  top: 0;
-  float: right;
-  background: #F3F4F6;
-  border: none;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  font-size: 18px;
-  color: #4B5563;
-  cursor: pointer;
+  border-radius: 16px;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  z-index: 10;
-  margin-bottom: 16px;
-}
-
-.institucional-modal-close:hover {
-  background: #E5E7EB;
-  color: #111827;
-  transform: rotate(90deg);
-}
-
-@keyframes institucionalFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes institucionalSlideUp {
-  from { transform: translateY(30px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  flex-direction: column;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ==========================================
    HEADER
    ========================================== */
-
-.institucional-modal-header {
-  text-align: center;
-  margin-bottom: 32px;
+.regulamentos-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 32px;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--brand-white);
 }
 
-.institucional-modal-tag {
-  display: inline-block;
-  background: rgba(0, 161, 220, 0.08);
-  border: 1px solid rgba(0, 161, 220, 0.25);
-  color: #00A1DC;
-  font-size: 12px;
-  font-weight: 700;
-  padding: 4px 16px;
-  border-radius: 99px;
-  margin-bottom: 12px;
-}
-
-.institucional-modal-title {
-  font-family: 'Manrope', sans-serif;
+.regulamentos-title {
+  font-family: var(--font-title);
   font-size: 24px;
   font-weight: 800;
-  margin: 0 0 10px 0;
-  line-height: 1.3;
-  color: #0f172a;
-}
-
-.institucional-modal-subtitle {
-  font-size: 14px;
-  color: #64748b;
-  margin: 0;
-  line-height: 1.6;
-}
-
-/* ==========================================
-   VÍDEO
-   ========================================== */
-
-.institucional-modal-video {
-  margin-bottom: 32px;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-}
-
-.video-wrapper-institucional {
-  position: relative;
-  width: 100%;
-  padding-bottom: 56.25%;
-  background: #0f172a;
-}
-
-.video-placeholder-institucional {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  cursor: pointer;
-}
-
-.video-thumbnail-institucional {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.video-overlay-institucional {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(8px);
-  padding: 6px 12px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #ffffff;
-  font-size: 11px;
-  font-weight: 600;
-}
-
-.youtube-icon-institucional {
-  font-size: 18px;
-  color: #FF0000;
-}
-
-.play-button-institucional {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: rgba(0, 161, 220, 0.9);
-  border: 3px solid #ffffff;
-  color: #ffffff;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  box-shadow: 0 0 30px rgba(0, 161, 220, 0.3);
-}
-
-.play-button-institucional:hover {
-  transform: translate(-50%, -50%) scale(1.1);
-  background: #00A1DC;
-  box-shadow: 0 0 50px rgba(0, 161, 220, 0.5);
-}
-
-.play-icon-institucional {
-  font-size: 26px;
-  margin-left: 4px;
-}
-
-.video-iframe-wrapper-institucional {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.video-iframe-institucional {
-  width: 100%;
-  height: 100%;
-  border: none;
-}
-
-/* ==========================================
-   HISTÓRIA
-   ========================================== */
-
-.institucional-modal-historia {
-  margin-bottom: 32px;
-}
-
-.historia-tag-institucional {
-  display: inline-block;
-  background: rgba(0, 161, 220, 0.08);
-  border: 1px solid rgba(0, 161, 220, 0.25);
-  color: #00A1DC;
-  font-size: 12px;
-  font-weight: 700;
-  padding: 4px 16px;
-  border-radius: 99px;
-  margin-bottom: 12px;
-}
-
-.historia-title-institucional {
-  font-family: 'Manrope', sans-serif;
-  font-size: 20px;
-  font-weight: 800;
-  margin: 0 0 12px 0;
-  color: #0f172a;
-}
-
-.historia-descricao-institucional {
-  font-size: 14px;
-  line-height: 1.8;
-  color: #475569;
-  margin: 0 0 12px 0;
-}
-
-.historia-stats-institucional {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin-top: 20px;
-}
-
-.stat-item-institucional {
-  text-align: center;
-  padding: 12px;
-  background: #f8fafc;
-  border-radius: 10px;
-  border: 1px solid #f1f5f9;
-}
-
-.stat-number-institucional {
-  display: block;
-  font-family: 'Manrope', sans-serif;
-  font-size: 22px;
-  font-weight: 800;
-  color: #00A1DC;
-}
-
-.stat-label-institucional {
-  font-size: 12px;
-  color: #64748b;
-  font-weight: 500;
-}
-
-/* ==========================================
-   VALORES
-   ========================================== */
-
-.institucional-modal-valores {
-  margin-bottom: 32px;
-}
-
-.valores-header-institucional {
-  text-align: center;
-  margin-bottom: 24px;
-}
-
-.valores-tag-institucional {
-  display: inline-block;
-  background: rgba(0, 161, 220, 0.08);
-  border: 1px solid rgba(0, 161, 220, 0.25);
-  color: #00A1DC;
-  font-size: 12px;
-  font-weight: 700;
-  padding: 4px 16px;
-  border-radius: 99px;
-  margin-bottom: 8px;
-}
-
-.valores-title-institucional {
-  font-family: 'Manrope', sans-serif;
-  font-size: 20px;
-  font-weight: 800;
-  margin: 0;
-  color: #0f172a;
-}
-
-.valores-grid-institucional {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-}
-
-.valor-card-institucional {
-  background: #f8fafc;
-  padding: 20px 16px;
-  border-radius: 12px;
-  border: 1px solid #f1f5f9;
-  transition: all 0.3s ease;
-  text-align: center;
-}
-
-.valor-card-institucional:hover {
-  transform: translateY(-2px);
-  border-color: #00A1DC;
-  box-shadow: 0 4px 12px rgba(0, 161, 220, 0.1);
-}
-
-.valor-icon-institucional {
-  font-size: 28px;
-  color: #00A1DC;
-  margin-bottom: 10px;
-  display: block;
-}
-
-.valor-title-institucional {
-  font-size: 14px;
-  font-weight: 700;
-  color: #0f172a;
+  color: var(--brand-dark-blue);
   margin: 0 0 6px 0;
 }
 
-.valor-desc-institucional {
-  font-size: 12px;
-  line-height: 1.6;
-  color: #64748b;
+.regulamentos-subtitle {
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--brand-gray);
   margin: 0;
 }
 
-/* ==========================================
-   MISSÃO, VISÃO E VALORES
-   ========================================== */
+.regulamentos-close {
+  background: var(--bg-gray);
+  border: none;
+  color: var(--brand-gray);
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
 
-.institucional-modal-mvv {
+.regulamentos-close:hover {
+  background: #FEE2E2;
+  color: #EF4444;
+  transform: rotate(90deg);
+}
+
+/* ==========================================
+   CONTEÚDO E CATEGORIAS
+   ========================================== */
+.regulamentos-content {
+  padding: 24px 32px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Scrollbar customizada */
+.regulamentos-content::-webkit-scrollbar { width: 6px; }
+.regulamentos-content::-webkit-scrollbar-track { background: transparent; }
+.regulamentos-content::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 10px; }
+.regulamentos-content::-webkit-scrollbar-thumb:hover { background: var(--brand-gray); }
+
+.regulamentos-categoria {
   margin-bottom: 32px;
 }
 
-.mvv-grid-institucional {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+.regulamentos-categoria:last-child {
+  margin-bottom: 0;
+}
+
+.regulamentos-categoria-header {
+  margin-bottom: 16px;
+}
+
+.regulamentos-categoria-title {
+  font-family: var(--font-title);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--brand-dark-blue);
+  margin: 0;
+  display: flex;
+  align-items: center;
   gap: 12px;
 }
 
-.mvv-card-institucional {
-  background: #f8fafc;
-  padding: 20px 16px;
-  border-radius: 12px;
-  border: 1px solid #f1f5f9;
-  transition: all 0.3s ease;
-}
-
-.mvv-card-institucional:hover {
-  transform: translateY(-2px);
-  border-color: #00A1DC;
-  box-shadow: 0 4px 12px rgba(0, 161, 220, 0.1);
-}
-
-.mvv-card-institucional.missao-institucional {
-  border-top: 3px solid #00A1DC;
-}
-
-.mvv-card-institucional.visao-institucional {
-  border-top: 3px solid #00E676;
-}
-
-.mvv-card-institucional.valores-institucional {
-  border-top: 3px solid #FF6B6B;
-}
-
-.mvv-icon-institucional {
-  font-size: 24px;
-  margin-bottom: 8px;
-  display: block;
-}
-
-.mvv-title-institucional {
-  font-size: 15px;
-  font-weight: 700;
-  color: #0f172a;
-  margin: 0 0 8px 0;
-}
-
-.mvv-desc-institucional {
+.categoria-count {
+  background: rgba(1, 161, 221, 0.1);
+  color: var(--brand-blue);
+  font-family: var(--font-body);
   font-size: 13px;
-  line-height: 1.6;
-  color: #475569;
-  margin: 0;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 20px;
 }
 
-.mvv-lista-institucional {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+.regulamentos-categoria-items {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 12px;
 }
 
-.mvv-lista-institucional li {
+/* ==========================================
+   ITEM DO DOCUMENTO
+   ========================================== */
+.regulamentos-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background: var(--brand-white);
+  transition: all 0.2s ease;
+}
+
+.regulamentos-item:hover {
+  border-color: var(--brand-blue);
+  box-shadow: 0 4px 16px rgba(1, 161, 221, 0.08);
+  transform: translateY(-1px);
+}
+
+.regulamentos-item-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  flex: 1;
+  padding-right: 20px;
+}
+
+.regulamentos-item-icon {
+  background: rgba(1, 161, 221, 0.1);
+  color: var(--brand-blue);
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.regulamentos-item-details {
+  display: flex;
+  flex-direction: column;
   gap: 6px;
-  font-size: 13px;
-  color: #475569;
 }
 
-.mvv-lista-institucional li svg {
-  color: #00A1DC;
-  font-size: 14px;
-}
-
-/* ==========================================
-   CTA
-   ========================================== */
-
-.institucional-modal-cta {
-  background: linear-gradient(135deg, #00A1DC 0%, #0087ba 100%);
-  border-radius: 16px;
-  padding: 32px 24px;
-  text-align: center;
-  box-shadow: 0 8px 20px rgba(0, 161, 220, 0.3);
-}
-
-.cta-title-institucional {
-  font-family: 'Manrope', sans-serif;
-  font-size: 20px;
-  font-weight: 800;
-  color: #ffffff;
-  margin: 0 0 8px 0;
-}
-
-.cta-desc-institucional {
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.9);
-  line-height: 1.6;
-  margin: 0 0 20px 0;
-}
-
-.cta-button-institucional {
-  display: inline-block;
-  padding: 12px 32px;
-  background: #ffffff;
-  color: #00A1DC;
+.regulamentos-item-title {
+  font-family: var(--font-title);
+  font-size: 15px;
   font-weight: 700;
-  font-size: 14px;
-  border-radius: 10px;
-  text-decoration: none;
-  transition: all 0.3s ease;
+  color: var(--brand-dark-blue);
+  margin: 0;
+  line-height: 1.4;
 }
 
-.cta-button-institucional:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-  background: #f8fafc;
+.regulamentos-item-meta {
+  font-family: var(--font-body);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--brand-gray);
+  align-items: center;
+}
+
+.meta-separator {
+  color: #D1D5DB;
+  font-size: 10px;
+}
+
+.regulamentos-item-categoria-tag {
+  background: rgba(255, 128, 31, 0.1);
+  color: var(--brand-orange);
+  padding: 2px 10px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-left: 4px;
 }
 
 /* ==========================================
-   RESPONSIVIDADE
+   BOTÃO VISUALIZAR (AÇÃO)
    ========================================== */
-
-@media (max-width: 768px) {
-  .institucional-modal-content {
-    padding: 24px 16px;
-    max-width: 100%;
-    max-height: 95vh;
-  }
-
-  .institucional-modal-scroll {
-    max-height: calc(95vh - 48px);
-  }
-
-  .institucional-modal-title {
-    font-size: 20px;
-  }
-
-  .valores-grid-institucional {
-    grid-template-columns: 1fr;
-  }
-
-  .mvv-grid-institucional {
-    grid-template-columns: 1fr;
-  }
-
-  .historia-stats-institucional {
-    grid-template-columns: 1fr;
-  }
-
-  .play-button-institucional {
-    width: 50px;
-    height: 50px;
-  }
-
-  .play-icon-institucional {
-    font-size: 20px;
-  }
-
-  .video-overlay-institucional {
-    top: 8px;
-    right: 8px;
-    padding: 4px 10px;
-    font-size: 10px;
-  }
-
-  .institucional-modal-cta {
-    padding: 24px 16px;
-  }
+.regulamentos-item-actions {
+  flex-shrink: 0;
 }
 
-@media (max-width: 480px) {
-  .institucional-modal-content {
-    padding: 16px 12px;
+.btn-visualizar-doc {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: var(--brand-blue);
+  border: 2px solid rgba(1, 161, 221, 0.2);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-visualizar-doc svg {
+  transition: transform 0.2s ease;
+}
+
+.btn-visualizar-doc:hover {
+  background: var(--brand-blue);
+  color: var(--brand-white);
+  border-color: var(--brand-blue);
+  box-shadow: 0 4px 12px rgba(1, 161, 221, 0.3);
+}
+
+.btn-visualizar-doc:hover svg {
+  transform: translate(2px, -2px);
+}
+
+/* ==========================================
+   FOOTER
+   ========================================== */
+.regulamentos-footer {
+  padding: 20px 32px;
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-gray);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.regulamentos-footer-text {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--brand-gray);
+  margin: 0;
+}
+
+.regulamentos-footer-close {
+  background: var(--brand-dark-blue);
+  color: var(--brand-white);
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.regulamentos-footer-close:hover {
+  background: #02415a;
+}
+
+/* ==========================================
+   ANIMAÇÕES E RESPONSIVIDADE
+   ========================================== */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@media (max-width: 650px) {
+  .regulamentos-header,
+  .regulamentos-content,
+  .regulamentos-footer {
+    padding: 16px 20px;
+  }
+  
+  .regulamentos-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
   }
 
-  .institucional-modal-title {
-    font-size: 18px;
+  .regulamentos-item-left {
+    padding-right: 0;
   }
 
-  .historia-title-institucional,
-  .valores-title-institucional {
-    font-size: 18px;
+  .btn-visualizar-doc {
+    width: 100%;
+    justify-content: center;
   }
 
-  .mvv-card-institucional {
-    padding: 16px 12px;
+  .regulamentos-footer {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
   }
 
-  .cta-title-institucional {
-    font-size: 18px;
+  .regulamentos-footer-close {
+    width: 100%;
   }
 }

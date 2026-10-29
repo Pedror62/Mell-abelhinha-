@@ -365,3 +365,85 @@
     max-height: calc(100dvh - 120px) !important;
   }
 }
+
+/* Container invisível que segura os itens flutuantes */
+.floating-widget-container {
+  position: relative;
+  z-index: 99999;
+}
+
+/* Balão de Chamariz (Tooltip) */
+.tooltip-bubble {
+  position: fixed;
+  bottom: 30px; /* Alinha a base do balão com a base do botão */
+  right: 95px;  /* 24px (margem da tela) + 58px (botão) + 13px (espaço) = ~95px */
+  z-index: 99999;
+  animation: fadeInTooltipLeft 0.3s ease-out;
+}
+
+.tooltip-content {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  padding: 12px 16px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 250px;
+}
+
+.tooltip-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: #334155;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.tooltip-close {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tooltip-close:hover {
+  color: #ef4444;
+}
+
+/* Setinha do balão apontando para baixo */
+.tooltip-arrow {
+  position: absolute;
+  bottom: 22px; /* Centraliza a setinha na altura do botão */
+  right: -7px;  /* Joga a setinha para fora do balão (para a direita) */
+  width: 12px;
+  height: 12px;
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  border-right: 1px solid #e2e8f0;
+  transform: rotate(45deg);
+}
+
+@keyframes fadeInTooltipLeft {
+  from { opacity: 0; transform: translateX(15px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Ajuste para celular (telas pequenas) */
+@media (max-width: 768px) {
+  .tooltip-bubble {
+    right: 85px; /* Ajusta a distância no mobile */
+    bottom: 26px; 
+    max-width: calc(100vw - 100px);
+  }
+  
+  .tooltip-arrow {
+    bottom: 18px;
+  }
+}

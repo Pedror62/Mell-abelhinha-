@@ -455,7 +455,7 @@ async function buscarFaturasCliente(token, baseUrl, cpfLimpo) {
 // 5. ROTA DE VIABILIDADE GEOSITE (NOVA)
 // ============================================
 app.post('/api/viabilidade', async (req, res) => {
-  console.log('🌐 Rota /api/viabilidade chamada:', req.body);
+  console.log(' Rota /api/viabilidade chamada:', req.body);
 
   try {
     const { endereco, numero, complemento, bairro, cidade, uf, cep, raio } = req.body;
@@ -478,7 +478,7 @@ app.post('/api/viabilidade', async (req, res) => {
       cep,
     ].filter(Boolean).join(', ');
 
-    console.log('📍 Endereço para consulta:', enderecoCompleto);
+    console.log('Endereço para consulta:', enderecoCompleto);
 
     const token = await getGeositeToken();
 
@@ -508,7 +508,7 @@ app.post('/api/viabilidade', async (req, res) => {
 
     const temViabilidade = Array.isArray(caixas) && caixas.length > 0;
 
-    console.log(`✅ Viabilidade: ${temViabilidade ? 'SIM' : 'NÃO'} (${caixas.length} caixas)`);
+    console.log(` Viabilidade: ${temViabilidade ? 'SIM' : 'NÃO'} (${caixas.length} caixas)`);
 
     return res.json({
       status: 'success',
@@ -867,6 +867,42 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'), (err) => {
     if (err) res.status(200).send('Servidor rodando! Acesse /api/health para testar.');
   });
+});
+// ============================================
+// 10. ROTA DE DESBLOQUEIO EM CONFIANÇA (NOVA)
+// ============================================
+app.post('/api/app/desbloqueio-confianca', async (req, res) => {
+  const { id_cliente_servico, dias_desbloqueio = 1 } = req.body;
+
+  if (!Number.isInteger(Number(id_cliente_servico)) || Number(id_cliente_servico) <= 0) {
+    return res.status(400).json({
+      status: 'error',
+      error: 'ID do serviço inválido.',
+    });
+  }
+
+  const dias = Number(dias_desbloqueio);
+
+  if (!Number.isInteger(dias) || dias < 1 || dias > 3) {
+    return res.status(400).json({
+      status: 'error',
+      error: 'A quantidade de dias deve estar entre 1 e 3.',
+    });
+  }
+
+  try {
+    const resposta = await hubsoftPost(
+      '/api/v1/integracao/cliente/desbloqueio_confianca',
+      {
+        id_cliente_servico: Number(id_cliente_servico),
+        dias_desbloqueio: dias,
+      }
+    );
+
+    return res.json(resposta);
+  } catch (error) {
+    return sendHubsoftError(res, error);
+  }
 });
 
 app.listen(PORT, () => {

@@ -28,6 +28,11 @@
   box-sizing: border-box;
   overflow: visible;
 
+  /* 👇 ADICIONE ESTAS DUAS LINHAS AQUI 👇 */
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+  /* 👆 ----------------------------- 👆 */
+
   /* FONTE PRINCIPAL */
   font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
 }

@@ -246,7 +246,7 @@
 }
 
 .plus-circle {
-  background: #00A1DC;
+  background: #e06d13;
   color: #ffffff;
   width: 14px;
   height: 14px;
@@ -972,4 +972,166 @@ input:checked + .slider:before {
     font-size: 12px;
     padding: 8px;
   }
+}
+/* Combos Promocionais */
+.combos-promocionais {
+  margin: 2rem auto 3rem;
+  max-width: 1200px;
+  padding: 0 1rem;
+}
+.combos-title {
+  text-align: center;
+  font-size: 1.4rem;
+  margin-bottom: 1.5rem;
+  color: #0a3d62;
+}
+.combos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.2rem;
+}
+.combo-card {
+  background: linear-gradient(135deg, #fff8e1, #ffe0b2);
+  border: 2px solid #ffb300;
+  border-radius: 14px;
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  box-shadow: 0 4px 12px rgba(255, 179, 0, 0.25);
+}
+.combo-badge {
+  font-weight: 700;
+  color: #b26a00;
+  font-size: 1.1rem;
+}
+.combo-composicao {
+  font-size: 0.9rem;
+  color: #5d4037;
+  margin: 0;
+}
+.combo-price {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #e65100;
+}
+.combo-price small {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.combo-bonus,
+.combo-fidelidade {
+  font-size: 0.85rem;
+  color: #4e342e;
+}
+.combo-obs {
+  font-size: 0.75rem;
+  color: #795548;
+  font-style: italic;
+  margin: 0;
+}
+
+/* Aviso de conformidade no modal */
+.modal-compliance-alert {
+  background: #fff3cd;
+  border-left: 4px solid #ffc107;
+  color: #856404;
+  padding: 0.8rem 1rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}
+/* Estilos dos Combos Promocionais */
+.combos-section {
+  margin-bottom: 40px;
+  text-align: center;
+}
+.combos-title {
+  font-size: 1.5rem;
+  color: #0a3d62;
+  margin-bottom: 20px;
+}
+.combos-grid {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.combo-card {
+  background: linear-gradient(135deg, #ffffff, #f0f8ff);
+  border: 2px dashed #00a8ff;
+  border-radius: 12px;
+  padding: 20px;
+  width: 280px;
+  box-shadow: 0 4px 15px rgba(0, 168, 255, 0.1);
+}
+.combo-badge {
+  background: #00a8ff;
+  color: white;
+  font-weight: bold;
+  padding: 4px 12px;
+  border-radius: 20px;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+.combo-composicao {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 15px;
+  min-height: 40px;
+}
+.combo-price {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #0a3d62;
+}
+.combo-price small {
+  font-size: 1rem;
+  font-weight: normal;
+}
+.combo-destaque {
+  display: block;
+  margin-top: 10px;
+  font-size: 0.85rem;
+  color: #009688;
+  font-weight: bold;
+}
+
+/* Alerta de Política no Modal */
+.modal-policy-alert {
+  background-color: #fff3cd;
+  color: #856404;
+  padding: 12px;
+  border-left: 4px solid #ffc107;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+/* Alinhamento do SVG nas linhas de adicionais */
+.servico-icon-svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* Barra de fidelidade */
+.fidelidade-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: #f0f9ff;
+  color: #0284c7;
+  border: 1px dashed #7dd3fc;
+  border-radius: 8px;
+  padding: 8px;
+  margin: 0 20px 20px 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.fidelidade-bar svg {
+  flex-shrink: 0;
 }
