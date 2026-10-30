@@ -869,37 +869,113 @@ app.get('/', (req, res) => {
   });
 });
 // ============================================
-// 10. ROTA DE DESBLOQUEIO EM CONFIANÇA (NOVA)
+// 10. DESBLOQUEIO EM CONFIANÇA
 // ============================================
+function dataLocalISO(d = new Date()) {
+  const ano = d.getFullYear();
+  const mes = String(d.getMonth() + 1).padStart(2, '0');
+  const dia = String(d.getDate()).padStart(2, '0');
+  return `${ano}-${mes}-${dia}`;
+}
+
+function dataBr(iso) {
+  if (!iso) return null;
+  const [ano, mes, dia] = String(iso).slice(0, 10).split('-');
+  return ano && mes && dia ? `${dia}/${mes}/${ano}` : null;
+}
+
+function extrairDataTerminoHubsoft(mensagem) {
+  const texto = String(mensagem || '');
+  const encontrada = texto.match(/(?:até|ate)\s+a\s+data\s+(\d{1,2}\/\d{1,2}\/\d{4})/i);
+  if (!encontrada) return null;
+  const [dia, mes, ano] = encontrada[1].split('/').map(Number);
+  if (!dia || !mes || !ano) return null;
+  return `${ano}-${String(mes).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+}
+
+async function abrirAtendimentoDesbloqueio(req, idServico, dias, resposta) {
+  const cliente = req.body?.cliente || {};
+  const deveAbrir = req.body?.abrir_atendimento !== false;
+  if (!deveAbrir) return null;
+
+  return hubsoftPost('/api/v1/integracao/atendimento', {
+    id_cliente_servico: idServico,
+    descricao: `Desbloqueio em confiança solicitado pelo aplicativo por ${dias} dias.`,
+    nome: cliente.nome || 'Cliente',
+    telefone: cliente.telefone || '',
+    email: cliente.email || '',
+    abrir_os: false,
+    parametros: {
+      origem: 'aplicativo_cliente',
+      acao: 'desbloqueio_confianca',
+      dias_desbloqueio: dias,
+      mensagem_hubsoft: resposta?.msg || '',
+    },
+  });
+}
+
 app.post('/api/app/desbloqueio-confianca', async (req, res) => {
-  const { id_cliente_servico, dias_desbloqueio = 1 } = req.body;
-
-  if (!Number.isInteger(Number(id_cliente_servico)) || Number(id_cliente_servico) <= 0) {
-    return res.status(400).json({
-      status: 'error',
-      error: 'ID do serviço inválido.',
-    });
-  }
-
+  const { id_cliente_servico, dias_desbloqueio = 3 } = req.body || {};
+  const idServico = Number(id_cliente_servico);
   const dias = Number(dias_desbloqueio);
 
-  if (!Number.isInteger(dias) || dias < 1 || dias > 3) {
+  if (!Number.isInteger(idServico) || idServico <= 0) {
+    return res.status(400).json({ status: 'error', error: 'ID do serviço inválido.' });
+  }
+
+  if (!Number.isInteger(dias) || dias < 3 || dias > 3) {
     return res.status(400).json({
       status: 'error',
-      error: 'A quantidade de dias deve estar entre 1 e 3.',
+      error: 'A quantidade de dias deve ser exatamente 3, conforme a regra atual da HubSoft.',
     });
   }
 
   try {
     const resposta = await hubsoftPost(
       '/api/v1/integracao/cliente/desbloqueio_confianca',
-      {
-        id_cliente_servico: Number(id_cliente_servico),
-        dias_desbloqueio: dias,
-      }
+      { id_cliente_servico: idServico, dias_desbloqueio: dias }
     );
 
-    return res.json(resposta);
+    if (resposta?.status !== 'success') {
+      return res.status(400).json(resposta || {
+        status: 'error',
+        error: 'A HubSoft não confirmou o desbloqueio.',
+      });
+    }
+
+    const dataInicio = dataLocalISO();
+    const dataTermino = extrairDataTerminoHubsoft(resposta.msg) || (() => {
+      const d = new Date();
+      d.setDate(d.getDate() + dias);
+      return dataLocalISO(d);
+    })();
+
+    let atendimento = null;
+    try {
+      atendimento = await abrirAtendimentoDesbloqueio(req, idServico, dias, resposta);
+    } catch (errorAtendimento) {
+      // O desbloqueio já foi realizado; não transformamos uma falha secundária
+      // na abertura do atendimento em falha do desbloqueio.
+      console.error('Aviso: desbloqueio feito, mas atendimento não foi aberto:', errorAtendimento.message);
+    }
+
+    return res.json({
+      status: 'success',
+      msg: resposta.msg || 'Desbloqueio realizado com sucesso.',
+      data_inicio: dataInicio,
+      data_termino: dataTermino,
+      data_termino_formatada: dataBr(dataTermino),
+      desbloqueio: {
+        ativo: true,
+        id_cliente_servico: idServico,
+        dias_desbloqueio: dias,
+        data_inicio: dataInicio,
+        data_termino: dataTermino,
+        data_termino_formatada: dataBr(dataTermino),
+      },
+      atendimento,
+      hubsoft: resposta,
+    });
   } catch (error) {
     return sendHubsoftError(res, error);
   }

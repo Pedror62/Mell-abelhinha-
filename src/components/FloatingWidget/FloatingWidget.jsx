@@ -87,6 +87,16 @@ const FloatingWidget = () => {
   // DESBLOQUEIO EM CONFIANÇA
   // ============================================
   const [desbloqueioLoading, setDesbloqueioLoading] = useState(false);
+  const [desbloqueioInfo, setDesbloqueioInfo] = useState(() => {
+    try {
+      const salvo = localStorage.getItem('desbloqueioConfianca');
+      if (!salvo) return null;
+      const info = JSON.parse(salvo);
+      if (info?.data_termino && new Date(`${info.data_termino}T23:59:59`) >= new Date()) return info;
+      localStorage.removeItem('desbloqueioConfianca');
+    } catch (_) { /* ignore */ }
+    return null;
+  });
 
   // ============================================
   // INDIQUE UM AMIGO
@@ -264,7 +274,15 @@ const FloatingWidget = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           id_cliente_servico: Number(id_cliente_servico),
-          dias_desbloqueio: 1, // Desbloqueio padrão de 1 dia
+          dias_desbloqueio: 3,
+          abrir_atendimento: true,
+          cliente: {
+            id_cliente: clienteLogado?.id_cliente,
+            codigo_cliente: clienteLogado?.codigo_cliente,
+            nome: clienteLogado?.nome_razaosocial,
+            telefone: clienteLogado?.telefone_primario,
+            email: clienteLogado?.email_principal,
+          },
         }),
       });
 
@@ -274,10 +292,21 @@ const FloatingWidget = () => {
         throw new Error(data.error || data.msg || 'Erro ao realizar desbloqueio.');
       }
 
+      const info = data.desbloqueio || {
+        ativo: true,
+        id_cliente_servico: Number(id_cliente_servico),
+        dias_desbloqueio: 3,
+        data_inicio: data.data_inicio,
+        data_termino: data.data_termino,
+        data_termino_formatada: data.data_termino_formatada,
+        protocolo_atendimento: data.atendimento?.protocolo || data.atendimento?.id_atendimento || null,
+      };
+      setDesbloqueioInfo(info);
+      localStorage.setItem('desbloqueioConfianca', JSON.stringify(info));
       mostrarToast(data.msg || 'Desbloqueio realizado com sucesso!', 'success');
 
       // Recarrega o dashboard para atualizar o status do serviço
-      carregarDashboard(clienteLogado);
+      await carregarDashboard(clienteLogado);
 
     } catch (error) {
       console.error('Erro no desbloqueio:', error);
@@ -463,12 +492,41 @@ const FloatingWidget = () => {
       }
     }
   };
-  const handleIndiqueChange = (e) => { setIndiqueData({ ...indiqueData, [e.target.name]: e.target.value }); };
+  const handleIndiqueChange = (e) => {
+    const { name, value } = e.target;
+    setIndiqueData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleOpenIndique = () => {
+    setIsOpen(false);
+    setPulsar(false);
+    setShowTooltip(false);
+    clearTimeout(tooltipTimeoutRef.current);
+    setShowIndiqueModal(true);
+  };
+
   const handleSubmitIndique = (e) => {
     e.preventDefault();
-    const numeroAtendimento = '5538998358385';
-    const mensagem = `*NOVA INDICAÇÃO DE AMIGO* %0A%0A*QUEM ESTÁ INDICANDO (CLIENTE):*%0A• *Nome:* ${indiqueData.nomeIndicador}%0A• *CPF:* ${indiqueData.cpfIndicador}%0A• *WhatsApp:* ${indiqueData.whatsIndicador}%0A• *Cidade:* ${indiqueData.cidadeIndicador}%0A%0A*QUEM É O INDICADO (AMIGO):*%0A• *Nome:* ${indiqueData.nomeIndicado}%0A• *CPF:* ${indiqueData.cpfIndicado}%0A• *WhatsApp:* ${indiqueData.whatsIndicado}%0A• *Cidade:* ${indiqueData.cidadeIndicado}`;
-    window.open(`https://wa.me/${numeroAtendimento}?text=${mensagem}`, '_blank');
+
+    const numeroAtendimento = '558000389004';
+    const mensagem = [
+      '*NOVA INDICAÇÃO DE AMIGO*',
+      '',
+      '*QUEM ESTÁ INDICANDO (CLIENTE):*',
+      `• *Nome:* ${indiqueData.nomeIndicador.trim()}`,
+      `• *CPF:* ${indiqueData.cpfIndicador.trim()}`,
+      `• *WhatsApp:* ${indiqueData.whatsIndicador.trim()}`,
+      `• *Cidade:* ${indiqueData.cidadeIndicador.trim()}`,
+      '',
+      '*QUEM É O INDICADO (AMIGO):*',
+      `• *Nome:* ${indiqueData.nomeIndicado.trim()}`,
+      `• *CPF:* ${indiqueData.cpfIndicado.trim()}`,
+      `• *WhatsApp:* ${indiqueData.whatsIndicado.trim()}`,
+      `• *Cidade:* ${indiqueData.cidadeIndicado.trim()}`
+    ].join('\\n');
+
+    const urlWhatsApp = `https://wa.me/${numeroAtendimento}?text=${encodeURIComponent(mensagem)}`;
+    window.open(urlWhatsApp, '_blank', 'noopener,noreferrer');
     setShowIndiqueModal(false);
   };
 
@@ -529,7 +587,7 @@ const FloatingWidget = () => {
           <div className="widget-options">
             <a href="https://wa.me/558000389004" target="_blank" rel="noopener noreferrer" className="widget-card">
               <div className="widget-card-icon"><FaWhatsapp className="link-icon" /></div>
-              <div className="widget-card-text"><strong>Atendimento WhatsApp</strong><p>Fale direto no app do Zap</p></div>
+              <div className="widget-card-text"><strong>Atendimento WhatsApp</strong><p>Fale direto no WhatsApp</p></div>
             </a>
             <button className="widget-card" onClick={handleOpenBoleto}>
               <div className="widget-card-icon">
@@ -537,7 +595,7 @@ const FloatingWidget = () => {
               </div>
               <div className="widget-card-text"><strong>2ª Via de Boleto</strong><p>{clienteLogado ? 'Ver meus boletos' : 'Consulte e baixe seus boletos'}</p></div>
             </button>
-            <button className="widget-card" onClick={() => setShowIndiqueModal(true)}>
+            <button className="widget-card" onClick={handleOpenIndique}>
               <div className="widget-card-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e06d13"><path d="M708-432v-84h-84v-72h84v-84h72v84h84v72h-84v84h-72Zm-426-90q-42-42-42-102t42-102q42-42 102-42t102 42q42 42 42 102t-42 102q-42 42-102 42t-102-42ZM96-192v-92q0-25.78 12.5-47.39T143-366q55-32 116-49t125-17q64 0 125 17t116 49q22 13 34.5 34.61T672-284v92H96Z"/></svg>
               </div>
@@ -736,21 +794,31 @@ const FloatingWidget = () => {
                       const statusOriginal = servico?.status || '';
                       const statusLower = statusOriginal.toLowerCase();
                       const estaSuspenso = statusLower.includes('suspenso') || statusLower.includes('bloqueado');
+                      const mesmoServico = !desbloqueioInfo?.id_cliente_servico || Number(desbloqueioInfo.id_cliente_servico) === Number(servico?.id_cliente_servico);
+                      const desbloqueioAtivo = Boolean(desbloqueioInfo?.ativo && mesmoServico && desbloqueioInfo?.data_termino);
 
-                      if (!estaSuspenso) return null;
+                      if (!estaSuspenso && !desbloqueioAtivo) return null;
 
                       return (
-                        <div className="section-card" style={{ borderLeft: '4px solid #f59e0b', background: '#fffbeb' }}>
+                        <div className="section-card" style={{ borderLeft: `4px solid ${desbloqueioAtivo ? '#16a34a' : '#f59e0b'}`, background: desbloqueioAtivo ? '#f0fdf4' : '#fffbeb' }}>
                           <div className="section-header">
-                            <h3 className="section-title" style={{ color: '#b45309' }}>
+                            <h3 className="section-title" style={{ color: desbloqueioAtivo ? '#15803d' : '#b45309' }}>
                               <FaLockOpen style={{ marginRight: 8 }} /> Desbloqueio em Confiança
                             </h3>
                           </div>
                           <div style={{ padding: '0 8px 16px' }}>
-                            <p style={{ fontSize: 14, color: '#78350f', marginBottom: 16 }}>
-                              Seu serviço está suspenso por débito. Você pode solicitar um desbloqueio em confiança para voltar a navegar agora mesmo.
-                            </p>
-                            <button
+                            {desbloqueioAtivo ? (
+                              <div style={{ color: '#166534', fontSize: 14, marginBottom: 16 }}>
+                                <strong>Desbloqueio ativo.</strong><br />
+                                Seu serviço está liberado até <strong>{desbloqueioInfo.data_termino_formatada || formatarData(desbloqueioInfo.data_termino)}</strong>.
+                                {desbloqueioInfo.protocolo_atendimento && (<> <br />Protocolo: <strong>{desbloqueioInfo.protocolo_atendimento}</strong></>)}
+                              </div>
+                            ) : (
+                              <p style={{ fontSize: 14, color: '#78350f', marginBottom: 16 }}>
+                                Seu serviço está suspenso por débito. Você pode solicitar um desbloqueio em confiança para voltar a navegar agora mesmo.
+                              </p>
+                            )}
+                            {!desbloqueioAtivo && <button
                               onClick={() => handleDesbloqueioConfianca(servico?.id_cliente_servico)}
                               disabled={desbloqueioLoading}
                               className="btn-block"
@@ -771,10 +839,10 @@ const FloatingWidget = () => {
                             >
                               {desbloqueioLoading ? 'Processando...' : (
                                 <>
-                                  <FaLockOpen /> Desbloquear por 1 dia
+                                  <FaLockOpen /> Desbloquear por 3 dias
                                 </>
                               )}
-                            </button>
+                            </button>}
                           </div>
                         </div>
                       );

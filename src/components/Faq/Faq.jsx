@@ -96,7 +96,12 @@ export const Faq = () => {
         {/* Call To Action no Rodapé do FAQ */}
         <div className="faq-footer-cta">
           <p>Ainda tem alguma dúvida sobre os serviços da Mell?</p>
-          <a href="#consultar-cobertura" className="faq-btn">
+          <a
+            href="https://wa.me/5508000389004"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="faq-btn"
+          >
             Falar com um consultor
           </a>
         </div>

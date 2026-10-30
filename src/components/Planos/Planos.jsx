@@ -29,9 +29,25 @@ const SVG_CHIP_35GB = (
   </svg>
 );
 
+// Ícone de roteador — usado em Roteador e Segundo Roteador
+const SVG_ROTEADOR = (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="1 1 18 18" height="18px" width="18px" fill="#e06d13" className="servico-icon-svg small">
+    <path d="M4.5,17q-0.62,0-1.06-0.44T3,15.5v-3q0-0.62 0.44-1.06T4.5,11h8V8H14v3h1.5q0.64 0 1.09,0.44T17,12.5v3q-0.04,0.6-0.47,1.05T15.5,17H4.5Zm0-1.5h11v-3H4.5v3Zm2.28-0.96Q7,14.32 7,14T6.79,13.47T6.25,13.25T5.72,13.46T5.5,14t0.21,0.54t0.53,0.22t0.54-0.21Zm2.75,0Q9.75,14.32 9.75,14T9.54,13.47T9,13.25T8.47,13.46T8.25,14t0.21,0.54T9,14.75t0.54-0.21Zm2.75,0Q12.5,14.32 12.5,14t-0.21-0.54t-0.53-0.22t-0.54,0.21T11,14t0.21,0.54t0.53,0.22t0.54-0.21ZM12.1,6.85L11.04,5.79q0.44-0.42 1.02-0.6T13.25,5t1.19,0.19t1.02,0.6L14.4,6.85q-0.23-0.23-0.53-0.29T13.25,6.5T12.64,6.56T12.1,6.85ZM10,4.75L8.92,3.67Q9.77,2.79 10.91,2.4T13.25,2t2.34,0.4t1.99,1.27L16.5,4.75Q15.85,4.1 15.01,3.8T13.25,3.5T11.49,3.8T10,4.75ZM4.5,15.5v-3v3Z"/>
+  </svg>
+);
+
+// Ícone de câmera externa — usado em Câmera Wi-Fi Externa Fixa e Câmera Wi-Fi Externa
+const SVG_CAMERA_EXTERNA = (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="1 1 18 18" height="18px" width="18px" fill="#e06d13" className="servico-icon-svg small">
+    <path d="M11.38,16.15Q11.1,16.47 10.7,16.5T9.96,16.25L7.29,13.98Q6.33,13.17 5.9,12.01T5.69,9.63L4.77,8.92Q4.5,8.71 4.44,8.38T4.5,7.75h-1V9.5q0,0.62-0.44,1.06T2,11V3Q2.63,3 3.06,3.44T3.5,4.5V6.25H5.71l1.21-1.4q0.27-0.3 0.66-0.34T8.29,4.75L9.15,5.46q1.19-0.42 2.43-0.22t2.18,0.99l2.79,2.33q0.31,0.27 0.36,0.68T16.67,9.98l-5.29,6.17Zm-0.83-1.35l4.65-5.4l-2.42-2q-0.79-0.67-1.85-0.73T8.85,7.17L7.73,6.21L6.13,8.06L7.31,9q-0.35,1.15-0.1,2.16t1.03,1.68l2.3,1.95Zm0.1-4.29Z"/>
+  </svg>
+);
+
 // Função de renderização de ícones
 const getServicoIcon = (nome, emoji, size = 'default') => {
   if (nome === 'Chip 35 GB') return SVG_CHIP_35GB;
+  if (nome === 'Roteador' || nome === 'Segundo Roteador') return SVG_ROTEADOR;
+  if (nome === 'Câmera Wi-Fi Externa Fixa' || nome === 'Câmera Wi-Fi Externa' || nome === 'Câmera Wi-Fi Interna') return SVG_CAMERA_EXTERNA;
   
   if (nome === 'livros' || nome === 'Livros*' || nome === 'livros*') {
     return <span className={`servico-icon-emoji ${size}`}>📚</span>;
@@ -42,7 +58,7 @@ const getServicoIcon = (nome, emoji, size = 'default') => {
     case 'Wi-Fi 6': return <img src={URL_WIFI_6} alt={nome} className={`servico-icon-img ${size}`} />;
     case 'Clube': return <img src={URL_CLUBE} alt={nome} className={`servico-icon-img ${size}`} />;
     case 'Deezer': return <img src={URL_DEEZER} alt={nome} className={`servico-icon-img ${size}`} />;
-    case 'qualifica': return <img src={URL_EBOOK_LIGHT} alt={nome} className={`servico-icon-img ${size}`} />;
+    case 'Qualifica': return <img src={URL_EBOOK_LIGHT} alt={nome} className={`servico-icon-img ${size}`} />;
     case 'Máquina de Contos': return <img src={URL_MAQUINA_CONTOS} alt={nome} className={`servico-icon-img ${size}`} />;
     case 'Ebook Standard': return <img src={URL_EBOOK_STANDARD} alt={nome} className={`servico-icon-img ${size}`} />;
     case 'Watch Brasil': return <img src={BASE64_WATCH_BRASIL} alt={nome} className={`servico-icon-img ${size}`} />;
@@ -74,11 +90,12 @@ const PLANOS_DATA = [
     adicionaisDisponiveis: [
       { id: 'chip_35gb', nome: 'Chip 35 GB', preco: 30.00, icon: '📱', descricao: 'Chip de dados móveis com 35GB de franquia' },
       { id: 'deezer', nome: 'Deezer', preco: 10.00, icon: '🎵', descricao: 'Streaming de música com milhões de faixas' },
+      { id: 'watch_brasil', nome: 'Watch Brasil', preco: 12.90, icon: '⌚', descricao: 'Streaming de conteúdos brasileiros exclusivos' },
       { id: 'ebook_light', nome: 'qualifica', preco: 12.90, icon: '📚', descricao: 'Biblioteca digital leve com os melhores títulos' },
       { id: 'conta_outra_vez', nome: 'Conta Outra Vez', preco: 19.90, icon: '📺', descricao: 'Serviço de streaming com conteúdo exclusivo' },
       { id: 'maquina_contos', nome: 'Máquina de Contos', preco: 19.90, icon: '📖', descricao: 'Histórias infantis interativas e educativas' },
       { id: 'ebook_standard', nome: 'Ebook Standard', preco: 11.90, icon: '📚', descricao: 'Biblioteca digital com milhares de títulos' },
-      { id: 'watch_brasil', nome: 'Watch Brasil', preco: 12.90, icon: '⌚', descricao: 'Streaming de conteúdos brasileiros exclusivos' },
+      
       { id: 'mini_conta_outra_vez', nome: 'Mini Conta Outra Vez', preco: 14.90, icon: '📺', descricao: 'Versão compacta do serviço de streaming' },
       { id: 'camera_interna', nome: 'Câmera Wi-Fi Interna', preco: 20.00, icon: '📹', descricao: 'Câmera de segurança interna com visão noturna' }
     ]
@@ -98,18 +115,21 @@ const PLANOS_DATA = [
       { nome: 'livros*', icon: '📚', descricao: 'Biblioteca digital com milhares de títulos disponíveis' }
     ],
     adicionaisDisponiveis: [
+      { id: 'deezer', nome: 'Deezer', preco: 10.00, icon: '🎵', descricao: 'Streaming de música com milhões de faixas' },
+      { id: 'camera_interna', nome: 'Câmera Wi-Fi Interna', preco: 20.00, icon: '📹', descricao: 'Câmera de segurança interna com visão noturna' },
+      { id: 'chip_35gb', nome: 'Chip 35 GB', preco: 30.00, icon: '📱', descricao: 'Chip de dados móveis com 35GB de franquia' },
+      
       { id: 'maquina_contos', nome: 'Máquina de Contos', preco: 19.90, icon: '📖', descricao: 'Histórias infantis interativas e educativas' },
       { id: 'ebook_standard', nome: 'Ebook Standard', preco: 11.90, icon: '📚', descricao: 'Biblioteca digital com milhares de títulos' },
-      { id: 'ebook_light', nome: 'qualifica', preco: 12.90, icon: '📚', descricao: 'Biblioteca digital leve com os melhores títulos' },
+      { id: 'ebook_light', nome: 'Qualifica', preco: 12.90, icon: '📚', descricao: 'Biblioteca digital leve com os melhores títulos' },
       { id: 'watch_brasil', nome: 'Watch Brasil', preco: 12.90, icon: '⌚', descricao: 'Streaming de conteúdos brasileiros exclusivos' },
       { id: 'mini_conta_outra_vez', nome: 'Mini Conta Outra Vez', preco: 14.90, icon: '📺', descricao: 'Versão compacta do serviço de streaming' },
       { id: 'roteador', nome: 'Roteador', preco: 15.00, icon: '📡', descricao: 'Roteador Wi-Fi de alta performance' },
       { id: 'segundo_roteador', nome: 'Segundo Roteador', preco: 15.00, icon: '📡', descricao: 'Roteador adicional para expandir a cobertura' },
       { id: 'cartao_memoria', nome: 'Cartão Memória 32GB', preco: 5.99, icon: '💾', descricao: 'Cartão de memória para câmeras e dispositivos' },
-      { id: 'chip_35gb', nome: 'Chip 35 GB', preco: 30.00, icon: '📱', descricao: 'Chip de dados móveis com 35GB de franquia' },
-      { id: 'deezer', nome: 'Deezer', preco: 10.00, icon: '🎵', descricao: 'Streaming de música com milhões de faixas' },
+      
       { id: 'conta_outra_vez', nome: 'Conta Outra Vez', preco: 19.90, icon: '📺', descricao: 'Serviço de streaming com conteúdo exclusivo' },
-      { id: 'camera_interna', nome: 'Câmera Wi-Fi Interna', preco: 20.00, icon: '📹', descricao: 'Câmera de segurança interna com visão noturna' },
+      
       { id: 'camera_externa_fixa', nome: 'Câmera Wi-Fi Externa Fixa', preco: 24.90, icon: '📹', descricao: 'Câmera de segurança externa fixa com alta resolução' },
       { id: 'camera_externa', nome: 'Câmera Wi-Fi Externa', preco: 29.90, icon: '📹', descricao: 'Câmera de segurança externa com visão 360°' }
     ]
@@ -131,7 +151,7 @@ const PLANOS_DATA = [
     adicionaisDisponiveis: [
       { id: 'deezer', nome: 'Deezer', preco: 10.00, icon: '🎵', descricao: 'Streaming de música com milhões de faixas' },
       { id: 'watch_brasil', nome: 'Watch Brasil', preco: 12.90, icon: '⌚', descricao: 'Streaming de conteúdos brasileiros exclusivos' },
-      { id: 'ebook_light', nome: 'qualifica', preco: 12.90, icon: '📚', descricao: 'Biblioteca digital leve com os melhores títulos' },
+      { id: 'ebook_light', nome: 'Qualifica', preco: 12.90, icon: '📚', descricao: 'Biblioteca digital leve com os melhores títulos' },
       { id: 'camera_interna', nome: 'Câmera Wi-Fi Interna', preco: 20.00, icon: '📹', descricao: 'Câmera de segurança interna com visão noturna' },
       { id: 'camera_externa_fixa', nome: 'Câmera Wi-Fi Externa Fixa', preco: 24.90, icon: '📹', descricao: 'Câmera de segurança externa fixa com alta resolução' },
       { id: 'camera_externa', nome: 'Câmera Wi-Fi Externa', preco: 29.90, icon: '📹', descricao: 'Câmera de segurança externa com visão 360°' },
@@ -199,7 +219,7 @@ export const Planos = () => {
       `• *Valor TOTAL:* R$ ${total.replace('.', ',')}/mês\n\n` +
       `Gostaria de dar andamento na minha contratação!`;
 
-    window.open(`https://wa.me/5538999999999?text=${encodeURIComponent(msg)}`, '_blank');
+    window.open(`https://wa.me/558000389004?text=${encodeURIComponent(msg)}`, '_blank');
     fecharModal();
   };
 

@@ -24,10 +24,11 @@ export const Footer = () => {
             </p>
           </div>
 
-          {/* Coluna 2: Institucional */}
+          {/* Coluna 2: Institucional*/}
           <div className="footer-col">
             <h4 className="footer-title">Institucional</h4>
             <ul className="footer-links">
+              {/*
               <li>
                 <a 
                   href="#institucional" 
@@ -40,6 +41,7 @@ export const Footer = () => {
                 </a>
               </li>
               <li><a href="#trabalhe-conosco">Trabalhe conosco</a></li>
+              */}
               <li>
                 <a 
                   href="#regulamentos" 
@@ -52,7 +54,7 @@ export const Footer = () => {
                 </a>
               </li>
             </ul>
-          </div>
+          </div> 
 
           {/* Coluna 3: Atendimento */}
           <div className="footer-col">

@@ -58,7 +58,7 @@ export const Navbar = () => {
               onClick={toggleContatoMenu}
               type="button"
             >
-              Contato
+              
             </button>
 
             {showContatoMenu && (
