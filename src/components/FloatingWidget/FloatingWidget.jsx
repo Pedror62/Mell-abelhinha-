@@ -11,8 +11,6 @@ import LojasModal from './LojasModal';
 import CancelamentoModal from '../Autoatendimento/CancelamentoModal';
 import Toast from './Toast';
 
-import { useOmniChat } from '../../hooks/useOmniChat';
-
 const API_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
 
 const FloatingWidget = () => {
@@ -171,35 +169,6 @@ const FloatingWidget = () => {
   useEffect(() => {
     const timerPulsar = setTimeout(() => setPulsar(false), 10000);
     return () => clearTimeout(timerPulsar);
-  }, []);
-
-  // ============================================
-  // HOOK DO OMNICHAT
-  // ============================================
-  useOmniChat(clienteLogado);
-
-  // ============================================
-  // ESCONDE O BOTÃO NATIVO DO ATENDERBEM
-  // ============================================
-  useEffect(() => {
-    const hideNativeChat = setInterval(() => {
-      const selectors = [
-        '.omni-chat-button', '#omni-chat-button', '[class*="omniChatButton"]',
-        '[id*="omniChatButton"]', '[class*="omni-chat-launcher"]', '[id*="omni-chat-launcher"]',
-        '[class*="omnichat"]', '[id*="omnichat"]', '#chat-widget-container', '.chat-widget-container',
-      ];
-
-      selectors.forEach((sel) => {
-        document.querySelectorAll(sel).forEach((el) => {
-          if (el.tagName === 'IFRAME') return;
-          if (el.style.display === 'none') return;
-          if (el.dataset.hiddenByFloating === 'true') return;
-          el.style.display = 'none';
-          el.dataset.hiddenByFloating = 'true';
-        });
-      });
-    }, 500);
-    return () => clearInterval(hideNativeChat);
   }, []);
 
   // ============================================

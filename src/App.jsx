@@ -14,10 +14,10 @@ import Faq from "./components/Faq/Faq";
 import Footer from "./components/Footer/Footer";
 import FloatingWidget from "./components/FloatingWidget/FloatingWidget";
 
-// ⭐ IMPORTANDO O BOTÃO DO CHAT
+//  IMPORTANDO O BOTÃO DO CHAT
 import ChatButton from "./components/ChatButton/ChatButton";
 
-// ⭐ CONTEXT E MODAL DE VIABILIDADE (compartilhado entre Hero e Ecossistema)
+//  CONTEXT E MODAL DE VIABILIDADE (compartilhado entre Hero e Ecossistema)
 import { ViabilidadeProvider } from "./context/ViabilidadeContext";
 import ViabilidadeModal from "./components/ViabilidadeModal/ViabilidadeModal";
 
