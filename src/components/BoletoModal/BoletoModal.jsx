@@ -78,8 +78,14 @@ const BoletoModal = ({ isOpen, onClose }) => {
     setAbaAtiva('pendentes');
     setClienteEncontrado(false);
 
+    // ✅ CORREÇÃO INTELIGENTE AQUI:
+    // Se estiver em localhost, usa a porta 3001 local. Se estiver em produção, usa a mesma origem.
+    const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:3001'
+      : '';
+
     try {
-      const response = await fetch('http://localhost:3001/api/consultar-boleto', {
+      const response = await fetch(`${baseUrl}/api/consultar-boleto`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -572,12 +578,7 @@ const BoletoModal = ({ isOpen, onClose }) => {
 
                   {abaAtiva === 'pagas' && (
                     <>
-                      <div className="lista-header">
-                        <span className="lista-titulo">Faturas Pagas</span>
-                        <span className="lista-total">
-                          Total: {formatCurrency(faturasPagas.reduce((acc, f) => acc + Number(f.valor || 0), 0))}
-                        </span>
-                      </div>
+                     
                       {renderizarFaturas(faturasPagas, 'pagas')}
                     </>
                   )}

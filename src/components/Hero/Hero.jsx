@@ -39,7 +39,7 @@ export const Hero = () => {
             </a>
           </div>
 
-          {/* 👇 BADGES ATUALIZADAS 👇 */}
+          {/*BADGES ATUALIZADAS */}
           <div className="hero-badges">
             {/* Fibra óptica */}
             <span className="badge">

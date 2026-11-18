@@ -1,7 +1,16 @@
+// src/components/ViabilidadeModal.jsx
 import React from 'react';
 import { useViabilidade } from '../../context/ViabilidadeContext';
 
-const API_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+// ✅ 1. Correção da URL do Backend
+// Se estiver a testar no seu PC (localhost), bate no backend local (porta 3001).
+// Se estiver no servidor de produção, usa a mesma origem (sem CORS).
+const getApiUrl = () => {
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    return 'http://localhost:3001';
+  }
+  return window.location.origin; // Em produção: https://mell.mellinternet.com.br
+};
 
 export const ViabilidadeModal = () => {
   const {
@@ -58,20 +67,26 @@ export const ViabilidadeModal = () => {
         throw new Error('Informe o CEP ou o endereço para consultar.');
       }
 
-      const response = await fetch(`${API_URL}/api/viabilidade`, {
+      const baseUrl = getApiUrl(); // ✅ Pega a URL correta
+
+      const response = await fetch(`${baseUrl}/api/viabilidade`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...formData, raio: 200 }),
       });
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.msg || 'Erro ao consultar viabilidade.');
+      
+      // Se a API retornar um erro (ex: endereço não encontrado), lança a exceção
+      if (!response.ok || data.status === 'error') {
+        throw new Error(data.msg || data.error || 'Erro ao consultar viabilidade.');
+      }
 
       setResultado(data);
       setConsultaFeita(true);
     } catch (error) {
       console.error('Erro na viabilidade:', error);
-      setErro(error.message || 'Não foi possível consultar a viabilidade.');
+      setErro(error.message || 'Não foi possível consultar a viabilidade. Verifique se o servidor backend está a correr.');
       setConsultaFeita(true);
     } finally {
       setLoading(false);

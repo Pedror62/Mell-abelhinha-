@@ -44,10 +44,10 @@ function App() {
         {/* Widget de Meus Dados (Direita) */}
         <FloatingWidget />
 
-        {/* ⭐ Botão Exclusivo do Chat (Esquerda) */}
+        {/* Botão Exclusivo do Chat (Esquerda) */}
         <ChatButton />
 
-        {/* ⭐ Modal de Viabilidade global (usado pelo Hero e pelo Ecossistema) */}
+        {/*  Modal de Viabilidade global (usado pelo Hero e pelo Ecossistema) */}
         <ViabilidadeModal />
       </div>
     </ViabilidadeProvider>

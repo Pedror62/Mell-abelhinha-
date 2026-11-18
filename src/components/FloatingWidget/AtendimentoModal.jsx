@@ -2,7 +2,26 @@
 import React, { useState } from 'react';
 import './AtendimentoModal.css';
 
-const API_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+// ✅ Correção da URL: 
+// Em dev, aponta para o seu backend local (porta 3001).
+// Em prod, usa o próprio domínio (evita CORS).
+const getApiUrl = () => {
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    return 'http://localhost:3001';
+  }
+  return window.location.origin;
+};
+
+const STATUS_PLANO_LABEL = (status) => {
+  if (!status) return 'Status não disponível';
+  const s = String(status).toLowerCase();
+  if (s.includes('suspenso')) return 'Suspenso por débito';
+  if (s.includes('habilitado') || s.includes('ativo')) return 'Ativo';
+  if (s.includes('cancelado') || s.includes('inativo')) return 'Cancelado';
+  if (s.includes('bloqueado')) return 'Bloqueado';
+  if (s.includes('pendente')) return 'Pendente';
+  return status;
+};
 
 const AtendimentoModal = ({ isOpen, onClose, modo = 'ligamos' }) => {
   const [etapa, setEtapa] = useState(1);
@@ -10,6 +29,10 @@ const AtendimentoModal = ({ isOpen, onClose, modo = 'ligamos' }) => {
   const [erro, setErro] = useState('');
   const [protocolo, setProtocolo] = useState(null);
   const [mensagemSucesso, setMensagemSucesso] = useState('');
+
+  const [servicosCliente, setServicosCliente] = useState([]);
+  const [servicoSelecionadoId, setServicoSelecionadoId] = useState('');
+  const [clienteConsultado, setClienteConsultado] = useState(null);
 
   const [formData, setFormData] = useState({
     nome: '', telefone: '', email: '', cpf: '', mensagem: '',
@@ -27,6 +50,9 @@ const AtendimentoModal = ({ isOpen, onClose, modo = 'ligamos' }) => {
       dataAgendamento: '', horarioAgendamento: '', melhorHorario: '',
       consentimento: false,
     });
+    setServicosCliente([]);
+    setServicoSelecionadoId('');
+    setClienteConsultado(null);
     setEtapa(1);
     setErro('');
     setProtocolo(null);
@@ -46,7 +72,67 @@ const AtendimentoModal = ({ isOpen, onClose, modo = 'ligamos' }) => {
     }));
   };
 
-  const proximaEtapa = () => {
+  const servicoSelecionado = servicosCliente.find(
+    (s) => String(s.id_cliente_servico) === String(servicoSelecionadoId)
+  ) || null;
+
+  // ---------------------------------------------------------------------
+  // BUSCA CLIENTE + TODOS OS SERVIÇOS (PLANOS/PONTOS)
+  // ---------------------------------------------------------------------
+  const buscarCliente = async (cpf) => {
+    const cpfLimpo = cpf.replace(/\D/g, '');
+    const baseUrl = getApiUrl(); // ✅ Pega a URL correta
+
+    const resp = await fetch(`${baseUrl}/api/app/dashboard`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        cliente: { cpf_cnpj: cpfLimpo },
+        periodo: { apenas_pendente: 'nao' }
+      })
+    });
+    const data = await resp.json().catch(() => ({}));
+    if (!resp.ok || data.status !== 'success') {
+      throw new Error(data.msg || data.error || 'Cliente não encontrado.');
+    }
+    const cliente = data.cliente || data.dados || data;
+
+    // Normaliza todos os serviços
+    const servicos = (cliente?.servicos || []).map((s, idx) => ({
+      id_cliente_servico: s.id_cliente_servico || s.uuid_cliente_servico || `servico-${idx}`,
+      id_servico: s.id_servico || null,
+      numero_plano: s.numero_plano || idx + 1,
+      nome: s.nome || s.descricao || 'Plano não informado',
+      valor: Number(s.valor || 0),
+      status: s.status || s.servico_status || 'Status não informado',
+      endereco_instalacao: s.endereco_instalacao || s.endereco_cadastral || null,
+      grupos: s.grupos || [],
+      contratos: s.contratos || [],
+    }));
+
+    return { ...cliente, servicos };
+  };
+
+  const abrirAtendimento = async (payload) => {
+    const baseUrl = getApiUrl(); // ✅ Pega a URL correta
+    const resp = await fetch(`${baseUrl}/api/app/atendimento`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const data = await resp.json().catch(() => ({}));
+    if (!resp.ok || data.status === 'error') {
+      throw new Error(data.msg || data.error || 'Erro ao abrir atendimento.');
+    }
+    return data;
+  };
+
+  // ---------------------------------------------------------------------
+  // VALIDAÇÃO DA ETAPA 1 + CARREGAR SERVIÇOS
+  // ---------------------------------------------------------------------
+  const proximaEtapa = async () => {
+    setErro('');
+
     if (!formData.cpf || formData.cpf.replace(/\D/g, '').length < 11) {
       setErro('Informe um CPF válido.'); return;
     }
@@ -59,36 +145,36 @@ const AtendimentoModal = ({ isOpen, onClose, modo = 'ligamos' }) => {
     if (!formData.setor) {
       setErro('Selecione um setor de destino.'); return;
     }
-    setErro('');
-    setEtapa(2);
-  };
 
-  const buscarCliente = async (cpf) => {
-    const cpfLimpo = cpf.replace(/\D/g, '');
-    const resp = await fetch(
-      `${API_URL}/api/v1/integracao/cliente/detalhes?busca=cpf_cnpj&termo_busca=${cpfLimpo}`
-    );
-    if (!resp.ok) {
-      const err = await resp.json().catch(() => ({}));
-      throw new Error(err.msg || 'Cliente não encontrado.');
+    // Busca cliente e serviços ao avançar (para exibir os pontos)
+    try {
+      setLoading(true);
+      const cpfLimpo = formData.cpf.replace(/\D/g, '');
+      const cliente = await buscarCliente(cpfLimpo);
+      if (!cliente) throw new Error('Cliente não encontrado.');
+
+      setClienteConsultado(cliente);
+      setServicosCliente(cliente.servicos || []);
+
+      // Se só tem um serviço, seleciona automaticamente
+      if ((cliente.servicos || []).length === 1) {
+        setServicoSelecionadoId(String(cliente.servicos[0].id_cliente_servico));
+      } else {
+        setServicoSelecionadoId('');
+      }
+
+      setEtapa(2);
+    } catch (err) {
+      console.error(err);
+      setErro(err.message || 'Erro ao buscar cliente.');
+    } finally {
+      setLoading(false);
     }
-    const data = await resp.json();
-    return data.cliente || data.data || data;
   };
 
-  const abrirAtendimento = async (payload) => {
-    const resp = await fetch(`${API_URL}/api/v1/integracao/atendimento`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-    if (!resp.ok) {
-      const err = await resp.json().catch(() => ({}));
-      throw new Error(err.msg || 'Erro ao abrir atendimento.');
-    }
-    return resp.json();
-  };
-
+  // ---------------------------------------------------------------------
+  // SUBMIT
+  // ---------------------------------------------------------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -98,8 +184,32 @@ const AtendimentoModal = ({ isOpen, onClose, modo = 'ligamos' }) => {
       const cpfLimpo = formData.cpf.replace(/\D/g, '');
       if (cpfLimpo.length < 11) throw new Error('Informe um CPF válido.');
 
-      const cliente = await buscarCliente(cpfLimpo);
+      // Reutiliza o cliente já consultado na etapa 1, se houver
+      const cliente = clienteConsultado || await buscarCliente(cpfLimpo);
       if (!cliente) throw new Error('Cliente não encontrado.');
+
+      const servicos = cliente.servicos || [];
+      if (servicos.length === 0) {
+        throw new Error('Nenhum plano/ponto encontrado para este cliente.');
+      }
+      if (servicos.length > 1 && !servicoSelecionadoId) {
+        throw new Error('Selecione qual plano/ponto deseja tratar.');
+      }
+
+      const servico = servicoSelecionado || servicos[0];
+
+      const dadosPlano = {
+        id_cliente_servico: servico.id_cliente_servico,
+        numero_plano: servico.numero_plano,
+        nome: servico.nome,
+        status: STATUS_PLANO_LABEL(servico.status),
+        valor: servico.valor,
+        endereco: servico.endereco_instalacao?.completo || '',
+      };
+
+      const linhaPlano = `Plano/Ponto: ${dadosPlano.nome} (Serviço ${dadosPlano.id_cliente_servico}, Plano ${dadosPlano.numero_plano})
+Status do plano: ${dadosPlano.status}
+Endereço: ${dadosPlano.endereco || 'Não informado'}`;
 
       let payload;
 
@@ -110,10 +220,13 @@ const AtendimentoModal = ({ isOpen, onClose, modo = 'ligamos' }) => {
             nome_razaosocial: cliente.nome_razaosocial || formData.nome,
             cpf_cnpj: cliente.cpf_cnpj || cpfLimpo,
             tipo_pessoa: formData.tipoPessoa === 'FISICA' ? 'Física' : 'Jurídica',
+            id_cliente_servico: servico.id_cliente_servico, // <- plano escolhido
           },
           atendimento: {
             tipo: 'SAC',
             descricao: `SOLICITAÇÃO DE RETORNO DE LIGAÇÃO
+
+${linhaPlano}
 
 Motivo: ${formData.mensagem || 'Solicitação de contato'}
 
@@ -125,6 +238,7 @@ Agendamento:
             prioridade: 'MEDIA',
             origem: 'LIGAMOS_PARA_VOCE',
             setor_destino: formData.setor || 'SAC',
+            id_cliente_servico: servico.id_cliente_servico, // <- plano escolhido
           },
           contato: {
             telefone: formData.telefone,
@@ -134,16 +248,20 @@ Agendamento:
             consentimento: formData.consentimento,
           },
         };
-      } else if (modo === 'ouvidoria') {
+      } else {
+        // ouvidoria
         payload = {
           cliente: {
             codigo_cliente: cliente.codigo_cliente || cliente.id_cliente,
             nome_razaosocial: cliente.nome_razaosocial || formData.nome,
             cpf_cnpj: cliente.cpf_cnpj || cpfLimpo,
+            id_cliente_servico: servico.id_cliente_servico, // <- plano escolhido
           },
           atendimento: {
             tipo: 'OUVIDORIA',
             descricao: `MANIFESTAÇÃO NA OUVIDORIA
+
+${linhaPlano}
 
 Protocolo anterior: ${formData.protocolo || 'Não informado'}
 
@@ -152,10 +270,12 @@ Mensagem: ${formData.mensagem}`,
             prioridade: 'ALTA',
             origem: 'OUVIDORIA',
             setor_destino: 'OUVIDORIA',
+            id_cliente_servico: servico.id_cliente_servico, // <- plano escolhido
           },
           ouvidoria: {
             tipo: 'RECLAMACAO',
             protocolo_anterior: formData.protocolo || null,
+            id_cliente_servico: servico.id_cliente_servico,
           },
         };
       }
@@ -172,6 +292,61 @@ Mensagem: ${formData.mensagem}`,
     }
   };
 
+  // ---------------------------------------------------------------------
+  // RENDER AUXILIAR — SELECT DE PLANOS/PONTOS
+  // ---------------------------------------------------------------------
+  const renderSelecaoPlano = () => {
+    if (servicosCliente.length === 0) return null;
+
+    if (servicosCliente.length === 1) {
+      const unico = servicosCliente[0];
+      return (
+        <div className="atendimento-form-group">
+          <label>Plano/Ponto</label>
+          <div className="atendimento-plano-unico">
+            <strong>{unico.nome}</strong>
+            <span>
+              Serviço {unico.id_cliente_servico} — {STATUS_PLANO_LABEL(unico.status)}
+            </span>
+            {unico.endereco_instalacao?.completo && (
+              <span className="atendimento-plano-endereco">
+                {unico.endereco_instalacao.completo}
+              </span>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="atendimento-form-group">
+        <label>Selecione o plano/ponto *</label>
+        <select
+          value={servicoSelecionadoId}
+          onChange={(e) => setServicoSelecionadoId(e.target.value)}
+        >
+          <option value="">Selecione o ponto ou plano</option>
+          {servicosCliente.map((servico) => (
+            <option
+              key={servico.id_cliente_servico}
+              value={servico.id_cliente_servico}
+            >
+              {servico.nome} — Serviço {servico.id_cliente_servico} ({STATUS_PLANO_LABEL(servico.status)})
+            </option>
+          ))}
+        </select>
+        {servicoSelecionado?.endereco_instalacao?.completo && (
+          <small className="atendimento-plano-endereco">
+            Endereço: {servicoSelecionado.endereco_instalacao.completo}
+          </small>
+        )}
+      </div>
+    );
+  };
+
+  // ---------------------------------------------------------------------
+  // RENDER PRINCIPAL
+  // ---------------------------------------------------------------------
   const renderFormulario = () => {
     if (protocolo) {
       return (
@@ -179,6 +354,12 @@ Mensagem: ${formData.mensagem}`,
           <div className="atendimento-sucesso-icon">✓</div>
           <h4>Solicitação registrada!</h4>
           <p>{mensagemSucesso}</p>
+          {servicoSelecionado && (
+            <p className="atendimento-sucesso-plano">
+              Plano/Ponto: <strong>{servicoSelecionado.nome}</strong>{' '}
+              (Serviço {servicoSelecionado.id_cliente_servico})
+            </p>
+          )}
           <div className="atendimento-protocolo">
             <span>Protocolo:</span>
             <strong>{protocolo}</strong>
@@ -255,14 +436,29 @@ Mensagem: ${formData.mensagem}`,
 
               {erro && <div className="atendimento-alert-error">{erro}</div>}
 
-              <button type="button" className="atendimento-btn" onClick={proximaEtapa}>
-                Prosseguir →
+              <button type="button" className="atendimento-btn" onClick={proximaEtapa} disabled={loading}>
+                {loading ? 'Consultando cliente...' : 'Prosseguir →'}
               </button>
             </div>
           )}
 
           {etapa === 2 && (
             <div className="atendimento-step-content">
+              <div className="atendimento-cliente-resumo">
+                <p>
+                  <strong>{clienteConsultado?.nome_razaosocial || formData.nome}</strong>
+                </p>
+                <p>CPF/CNPJ: {clienteConsultado?.cpf_cnpj || formData.cpf}</p>
+                {servicosCliente.length > 1 && (
+                  <p className="atendimento-alerta-planos">
+                    Este cliente possui <strong>{servicosCliente.length} planos/pontos</strong>.
+                    Escolha qual deseja tratar.
+                  </p>
+                )}
+              </div>
+
+              {renderSelecaoPlano()}
+
               <div className="atendimento-form-group">
                 <label>Descreva o motivo do contato</label>
                 <textarea name="mensagem" value={formData.mensagem}
@@ -305,7 +501,15 @@ Mensagem: ${formData.mensagem}`,
                   onClick={() => { setErro(''); setEtapa(1); }}>
                   ← Voltar
                 </button>
-                <button type="submit" className="atendimento-btn" disabled={loading || !formData.consentimento}>
+                <button
+                  type="submit"
+                  className="atendimento-btn"
+                  disabled={
+                    loading ||
+                    !formData.consentimento ||
+                    (servicosCliente.length > 1 && !servicoSelecionadoId)
+                  }
+                >
                   {loading ? 'Enviando...' : 'Agendar ligação'}
                 </button>
               </div>
@@ -315,6 +519,7 @@ Mensagem: ${formData.mensagem}`,
       );
     }
 
+    // ---------------- OUVIDORIA ----------------
     return (
       <form onSubmit={handleSubmit} className="atendimento-form">
         <div className="atendimento-form-group">
@@ -341,6 +546,40 @@ Mensagem: ${formData.mensagem}`,
             onChange={handleChange} placeholder="Número do protocolo" />
         </div>
 
+        {/* Carrega planos ao clicar em "Buscar planos" */}
+        {servicosCliente.length === 0 ? (
+          <button
+            type="button"
+            className="atendimento-btn"
+            disabled={loading}
+            onClick={async () => {
+              setErro('');
+              if (!formData.cpf || formData.cpf.replace(/\D/g, '').length < 11) {
+                setErro('Informe um CPF válido para buscar os planos.');
+                return;
+              }
+              try {
+                setLoading(true);
+                const cpfLimpo = formData.cpf.replace(/\D/g, '');
+                const cliente = await buscarCliente(cpfLimpo);
+                setClienteConsultado(cliente);
+                setServicosCliente(cliente?.servicos || []);
+                if ((cliente?.servicos || []).length === 1) {
+                  setServicoSelecionadoId(String(cliente.servicos[0].id_cliente_servico));
+                }
+              } catch (err) {
+                setErro(err.message || 'Erro ao buscar planos.');
+              } finally {
+                setLoading(false);
+              }
+            }}
+          >
+            {loading ? 'Buscando...' : 'Buscar planos do CPF'}
+          </button>
+        ) : (
+          renderSelecaoPlano()
+        )}
+
         <div className="atendimento-form-group">
           <label>Sua mensagem *</label>
           <textarea name="mensagem" value={formData.mensagem}
@@ -358,7 +597,15 @@ Mensagem: ${formData.mensagem}`,
 
         {erro && <div className="atendimento-alert-error">{erro}</div>}
 
-        <button type="submit" className="atendimento-btn" disabled={loading || !formData.consentimento}>
+        <button
+          type="submit"
+          className="atendimento-btn"
+          disabled={
+            loading ||
+            !formData.consentimento ||
+            (servicosCliente.length > 1 && !servicoSelecionadoId)
+          }
+        >
           {loading ? 'Enviando...' : 'Enviar para Ouvidoria'}
         </button>
       </form>

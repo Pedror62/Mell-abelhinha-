@@ -404,55 +404,119 @@ async function buscarFaturasCliente(token, baseUrl, cpfLimpo) {
   try {
     console.log(' Buscando faturas do cliente...');
     const periodo = gerarPeriodoDatas();
+
+    const url = `${baseUrl}/api/v1/integracao/cliente/financeiro`;
+
+    let faturasPendentes = [];
+    try {
+      const respPendentes = await axios.get(url, {
+        params: {
+          busca: 'cpf_cnpj',
+          termo_busca: cpfLimpo,
+          apenas_pendente: 'sim',
+          limit: 50,
+          order_by: 'data_vencimento',
+          order_type: 'asc',
+          data_inicio: periodo.data_inicio,
+          data_fim: periodo.data_fim,
+          tipo_data: 'data_vencimento',
+        },
+        headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        timeout: HUBSOFT_TIMEOUT_MS,
+      });
+
+      const status = String(respPendentes.data?.status || '').toLowerCase();
+      if (['success', 'suscess', 'ok'].includes(status)) {
+        faturasPendentes = respPendentes.data?.faturas || [];
+      } else {
+        console.log(`   Resposta inesperada (pendentes): ${respPendentes.data?.msg || status}`);
+      }
+    } catch (error) {
+      console.log(`   Erro ao buscar faturas pendentes: ${error.message}`);
+    }
+
     let faturasPagas = [];
-    let faturasEmAberto = [];
-    let todasFaturas = [];
-
     try {
-      const responsePagas = await axios.get(`${baseUrl}/api/v1/integracao/financeiro/fatura`, {
-        params: { busca: 'cpf_cnpj', termo_busca: cpfLimpo, apenas_quitado: 'sim', exibir_fatura_inativa: 'nao', tipo_data: 'data_vencimento', data_inicio: periodo.data_inicio, data_fim: periodo.data_fim, exibir_pix_copia_cola: 'sim', exibir_faturas_renegociacao: 'sim', valor_zerado: 'sim', itens_por_pagina: 500, pagina: 0 },
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      const respPagas = await axios.get(url, {
+        params: {
+          busca: 'cpf_cnpj',
+          termo_busca: cpfLimpo,
+          apenas_pendente: 'nao',
+          limit: 50,
+          order_by: 'data_vencimento',
+          order_type: 'desc',
+          data_inicio: periodo.data_inicio,
+          data_fim: periodo.data_fim,
+          tipo_data: 'data_vencimento',
+        },
+        headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+        timeout: HUBSOFT_TIMEOUT_MS,
       });
-      faturasPagas = responsePagas.data?.faturas || [];
-    } catch (error) { console.log(`   Erro ao buscar faturas pagas: ${error.message}`); }
 
-    try {
-      const responseAberto = await axios.get(`${baseUrl}/api/v1/integracao/financeiro/fatura`, {
-        params: { busca: 'cpf_cnpj', termo_busca: cpfLimpo, apenas_em_aberto: 'sim', exibir_fatura_inativa: 'nao', tipo_data: 'data_vencimento', data_inicio: periodo.data_inicio, data_fim: periodo.data_fim, exibir_pix_copia_cola: 'sim', exibir_faturas_renegociacao: 'sim', valor_zerado: 'sim', itens_por_pagina: 500, pagina: 0 },
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      });
-      faturasEmAberto = responseAberto.data?.faturas || [];
-    } catch (error) { console.log(`   Erro ao buscar faturas em aberto: ${error.message}`); }
+      const status = String(respPagas.data?.status || '').toLowerCase();
+      if (['success', 'suscess', 'ok'].includes(status)) {
+        const todas = respPagas.data?.faturas || [];
+        faturasPagas = todas.filter((f) => isFaturaPaga(f));
+      } else {
+        console.log(`   Resposta inesperada (pagas): ${respPagas.data?.msg || status}`);
+      }
+    } catch (error) {
+      console.log(`   Erro ao buscar faturas pagas: ${error.message}`);
+    }
 
-    const idsPagas = new Set(faturasPagas.map(f => f.id_fatura));
-    todasFaturas = [...faturasPagas];
-    faturasEmAberto.forEach(f => { if (!idsPagas.has(f.id_fatura)) todasFaturas.push(f); });
+    const idsPendentes = new Set(faturasPendentes.map((f) => f.id_fatura));
+    const idsPagas = new Set(faturasPagas.map((f) => f.id_fatura));
+    const todasFaturas = [
+      ...faturasPendentes,
+      ...faturasPagas.filter((f) => !idsPendentes.has(f.id_fatura)),
+    ];
 
     if (todasFaturas.length === 0) {
       try {
-        const response = await axios.get(`${baseUrl}/api/v1/integracao/financeiro/fatura`, {
-          params: { busca: 'cpf_cnpj', termo_busca: cpfLimpo, tipo_data: 'data_vencimento', data_inicio: periodo.data_inicio, data_fim: periodo.data_fim, exibir_pix_copia_cola: 'sim', exibir_fatura_inativa: 'sim', exibir_faturas_renegociacao: 'sim', valor_zerado: 'sim', itens_por_pagina: 500, pagina: 0 },
-          headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        const respFallback = await axios.get(url, {
+          params: {
+            busca: 'cpf_cnpj',
+            termo_busca: cpfLimpo,
+            apenas_pendente: 'nao',
+            limit: 50,
+            order_by: 'data_vencimento',
+            order_type: 'desc',
+          },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+          timeout: HUBSOFT_TIMEOUT_MS,
         });
-        const faturasFallback = response.data?.faturas || [];
-        todasFaturas = faturasFallback.filter(f => {
-          const servico = f.servico || f.cliente?.servico || null;
-          if (!servico) return true;
-          const status = String(servico.status || '').toLowerCase();
-          const statusInativo = ['cancelado', 'inativo', 'desabilitado'];
-          return !statusInativo.some(s => status.includes(s));
-        });
-      } catch (error) { console.log(`   Erro no fallback: ${error.message}`); }
+
+        const status = String(respFallback.data?.status || '').toLowerCase();
+        if (['success', 'suscess', 'ok'].includes(status)) {
+          const faturasFallback = respFallback.data?.faturas || [];
+          todasFaturas.push(
+            ...faturasFallback.filter((f) => {
+              const servico = f.servico || f.cliente?.servico || null;
+              if (!servico) return true;
+              const st = String(servico.status || '').toLowerCase();
+              const statusInativo = ['cancelado', 'inativo', 'desabilitado'];
+              return !statusInativo.some((s) => st.includes(s));
+            })
+          );
+        }
+      } catch (error) {
+        console.log(`   Erro no fallback: ${error.message}`);
+      }
     }
-    return { todas: todasFaturas, pagas: faturasPagas, emAberto: faturasEmAberto };
+
+    return {
+      todas: todasFaturas,
+      pagas: faturasPagas,
+      emAberto: faturasPendentes,
+    };
   } catch (error) {
-    console.error(' Erro ao buscar faturas:', error.message);
+    console.error(' Erro ao buscar faturas:', error.response?.data || error.message);
     return { todas: [], pagas: [], emAberto: [] };
   }
 }
 
 // ============================================
-// 5. ROTA DE VIABILIDADE GEOSITE (NOVA)
+// 5. ROTA DE VIABILIDADE GEOSITE (CORRIGIDA)
 // ============================================
 app.post('/api/viabilidade', async (req, res) => {
   console.log(' Rota /api/viabilidade chamada:', req.body);
@@ -468,7 +532,7 @@ app.post('/api/viabilidade', async (req, res) => {
       });
     }
 
-    // Monta o endereço no formato que o GeoSite aceita
+    // Monta o endereço exatamente como o GeoSite espera
     const enderecoCompleto = [
       endereco,
       numero,
@@ -478,10 +542,11 @@ app.post('/api/viabilidade', async (req, res) => {
       cep,
     ].filter(Boolean).join(', ');
 
-    console.log('Endereço para consulta:', enderecoCompleto);
+    console.log('Endereço para consulta GeoSite:', enderecoCompleto);
 
     const token = await getGeositeToken();
 
+    // ✅ Chamada correta à API do GeoSite
     const response = await axios.get(
       'https://telecom.geosite.com.br/geosite-telecom-api/viabilidade/caixas',
       {
@@ -499,14 +564,14 @@ app.post('/api/viabilidade', async (req, res) => {
 
     const data = response.data || {};
 
-    // GeoSite pode retornar em diferentes chaves dependendo da versão
-    const caixas =
-      data.caixas ||
-      data.records ||
-      data.features ||
-      (Array.isArray(data) ? data : []);
+    // O GeoSite pode retornar em diferentes formatos dependendo da versão
+    let caixas = [];
+    if (Array.isArray(data)) caixas = data;
+    else if (Array.isArray(data.caixas)) caixas = data.caixas;
+    else if (Array.isArray(data.records)) caixas = data.records;
+    else if (Array.isArray(data.features)) caixas = data.features;
 
-    const temViabilidade = Array.isArray(caixas) && caixas.length > 0;
+    const temViabilidade = caixas.length > 0;
 
     console.log(` Viabilidade: ${temViabilidade ? 'SIM' : 'NÃO'} (${caixas.length} caixas)`);
 
@@ -868,6 +933,7 @@ app.get('/', (req, res) => {
     if (err) res.status(200).send('Servidor rodando! Acesse /api/health para testar.');
   });
 });
+
 // ============================================
 // 10. DESBLOQUEIO EM CONFIANÇA
 // ============================================
@@ -954,8 +1020,6 @@ app.post('/api/app/desbloqueio-confianca', async (req, res) => {
     try {
       atendimento = await abrirAtendimentoDesbloqueio(req, idServico, dias, resposta);
     } catch (errorAtendimento) {
-      // O desbloqueio já foi realizado; não transformamos uma falha secundária
-      // na abertura do atendimento em falha do desbloqueio.
       console.error('Aviso: desbloqueio feito, mas atendimento não foi aberto:', errorAtendimento.message);
     }
 

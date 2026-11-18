@@ -11,7 +11,15 @@ import LojasModal from './LojasModal';
 import CancelamentoModal from '../Autoatendimento/CancelamentoModal';
 import Toast from './Toast';
 
-const API_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+// ✅ CORREÇÃO INTELIGENTE AQUI:
+// Se estiver em localhost, força a comunicação com o backend local (porta 3001).
+// Se estiver em produção, usa a URL configurada (ou o próprio domínio).
+const API_URL = (() => {
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    return 'http://localhost:3001';
+  }
+  return (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+})();
 
 const FloatingWidget = () => {
   // ============================================
@@ -82,21 +90,43 @@ const FloatingWidget = () => {
   const [dashboard, setDashboard] = useState(null);
   const [dashboardLoading, setDashboardLoading] = useState(false);
   const [dashboardError, setDashboardError] = useState('');
+  const [servicoSelecionadoId, setServicoSelecionadoId] = useState(null);
+
+  // Mantém todos os pontos/planos retornados pelo HubSoft.
+  const servicosDashboard = Array.isArray(dashboard?.servicos)
+    ? dashboard.servicos
+    : Array.isArray(dashboard?.cliente?.servicos)
+      ? dashboard.cliente.servicos
+      : [];
+  const servicosExibidos = servicosDashboard.length > 0
+    ? servicosDashboard
+    : clienteLogado?.servico_detalhes
+      ? [clienteLogado.servico_detalhes]
+      : [];
+  const servicoSelecionado =
+    servicosExibidos.find((servico) => String(servico.id_cliente_servico) === String(servicoSelecionadoId))
+    || servicosExibidos[0]
+    || null;
 
   // ============================================
   // DESBLOQUEIO EM CONFIANÇA
   // ============================================
   const [desbloqueioLoading, setDesbloqueioLoading] = useState(false);
-  const [desbloqueioInfo, setDesbloqueioInfo] = useState(() => {
-    try {
-      const salvo = localStorage.getItem('desbloqueioConfianca');
-      if (!salvo) return null;
-      const info = JSON.parse(salvo);
-      if (info?.data_termino && new Date(`${info.data_termino}T23:59:59`) >= new Date()) return info;
-      localStorage.removeItem('desbloqueioConfianca');
-    } catch (_) { /* ignore */ }
-    return null;
-  });
+
+  useEffect(() => {
+    if (!servicosExibidos.length) {
+      setServicoSelecionadoId(null);
+      return;
+    }
+
+    const selecaoAindaExiste = servicosExibidos.some(
+      (servico) => String(servico.id_cliente_servico) === String(servicoSelecionadoId)
+    );
+
+    if (!selecaoAindaExiste) {
+      setServicoSelecionadoId(servicosExibidos[0].id_cliente_servico ?? null);
+    }
+  }, [dashboard, clienteLogado]);
 
   // ============================================
   // INDIQUE UM AMIGO
@@ -274,15 +304,7 @@ const FloatingWidget = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           id_cliente_servico: Number(id_cliente_servico),
-          dias_desbloqueio: 3,
-          abrir_atendimento: true,
-          cliente: {
-            id_cliente: clienteLogado?.id_cliente,
-            codigo_cliente: clienteLogado?.codigo_cliente,
-            nome: clienteLogado?.nome_razaosocial,
-            telefone: clienteLogado?.telefone_primario,
-            email: clienteLogado?.email_principal,
-          },
+          dias_desbloqueio: 1, // Desbloqueio padrão de 1 dia
         }),
       });
 
@@ -292,21 +314,10 @@ const FloatingWidget = () => {
         throw new Error(data.error || data.msg || 'Erro ao realizar desbloqueio.');
       }
 
-      const info = data.desbloqueio || {
-        ativo: true,
-        id_cliente_servico: Number(id_cliente_servico),
-        dias_desbloqueio: 3,
-        data_inicio: data.data_inicio,
-        data_termino: data.data_termino,
-        data_termino_formatada: data.data_termino_formatada,
-        protocolo_atendimento: data.atendimento?.protocolo || data.atendimento?.id_atendimento || null,
-      };
-      setDesbloqueioInfo(info);
-      localStorage.setItem('desbloqueioConfianca', JSON.stringify(info));
       mostrarToast(data.msg || 'Desbloqueio realizado com sucesso!', 'success');
 
       // Recarrega o dashboard para atualizar o status do serviço
-      await carregarDashboard(clienteLogado);
+      carregarDashboard(clienteLogado);
 
     } catch (error) {
       console.error('Erro no desbloqueio:', error);
@@ -415,7 +426,7 @@ const FloatingWidget = () => {
     setClienteLogado(null); setClienteId(null); setShowMeusDadosModal(false);
     setTelaMeusDados('menu'); setUsuarioLogin(''); setSenhaLogin(''); setMostrarSenha(false);
     setBoletos(null); setBoletosError(''); setAbaBoletos('pendentes');
-    setDashboard(null); setDashboardError(''); setDashboardLoading(false);
+    setDashboard(null); setDashboardError(''); setDashboardLoading(false); setServicoSelecionadoId(null);
     setCadastroData({ nomeCompleto: '', cpfCnpj: '', whatsapp: '', email: '', cep: '', cidade: '', bairro: '', rua: '', numero: '', complemento: '' });
   };
 
@@ -508,7 +519,7 @@ const FloatingWidget = () => {
   const handleSubmitIndique = (e) => {
     e.preventDefault();
 
-    const numeroAtendimento = '558000389004';
+    const numeroAtendimento = '5538998358385';
     const mensagem = [
       '*NOVA INDICAÇÃO DE AMIGO*',
       '',
@@ -666,7 +677,7 @@ const FloatingWidget = () => {
                   <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="48 -912 864 864" width="18px" fill="#e06d13"><path d="M378-522q-42-42-42-102t42-102q42-42 102-42t102 42q42 42 42 102t-42 102q-42 42-102 42t-102-42ZM192-192v-96q0-23 12.5-43.5T239-366q55-32 116.29-49 61.29-17 124.5-17t124.71 17Q666-398 721-366q22 13 34.5 34t12.5 44v96H192Zm72-72h432v-24q0-5.18-3.03-9.41-3.02-4.24-7.97-6.59-46-28-98-42t-107-14q-55 0-107 14t-98 42q-5 4-8 7.72-3 3.73-3 8.28v24Zm267-309.21q21-21.21 21-51T530.79-675q-21.21-21-51-21T429-674.79q-21 21.21-21 51T429.21-573q21.21 21 51 21T531-573.21ZM480-624Zm0 360Z"/></svg> Minha Conta
                 </button>
                 <button className={`app-sidebar-item ${telaMeusDados === 'boletos' ? 'active' : ''}`} onClick={() => setTelaMeusDados('boletos')}>
-                  <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="48 -912 864 864" width="18px" fill="#e06d13"><path d="M240-96q-46 0-71-24.5T144-192v-144h96v-528l57.6 58 57.6-58 57.6 58 57.6-58 57.6 58 57.6-58 57.6 58 57.6-58 57.6 58 57.6-58v660q0 47-31 77.5T708-96H240Zm468-72q16 0 26-9.5t10-26.5v-540H312v408h360v132q0 17 10 26.5t26 9.5ZM360-600v-72h216v72H360Zm0 120v-72h216v72H360Zm300-120q-14 0-25-10.29t-11-25.5q0-15.21 11-25.71t25.5-10.5q14.5 0 25 10.29t10.5 25.5q0 15.21-10.35 25.71T660-600Zm0 120q-14 0-25-10.29t-11-25.5q0-15.21 11-25.71t25.5-10.5q14.5 0 25 10.29t10.5 25.5q0 15.21-10.35 25.71T660-480ZM240-168h360v-96H216v72q0 17 3.5 20.5T240-168Zm-24 0v-96 96Z"/></svg> Boletos
+                  <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="48 -912 864 864" width="18px" fill="#e06d13"><path d="M240-96q-46 0-71-24.5T144-192v-144h96v-528l57.6 58 57.6-58 57.6 58 57.6-58 57.6 58 57.6-58 57.6 58 57.6-58 57.6 58 57.6-58 57.6 58 57.6-58 57.6 58v660q0 47-31 77.5T708-96H240Zm468-72q16 0 26-9.5t10-26.5v-540H312v408h360v132q0 17 10 26.5t26 9.5ZM360-600v-72h216v72H360Zm0 120v-72h216v72H360Zm300-120q-14 0-25-10.29t-11-25.5q0-15.21 11-25.71t25.5-10.5q14.5 0 25 10.29t10.5 25.5q0 15.21-10.35 25.71T660-600Zm0 120q-14 0-25-10.29t-11-25.5q0-15.21 11-25.71t25.5-10.5q14.5 0 25 10.29t10.5 25.5q0 15.21-10.35 25.71T660-480ZM240-168h360v-96H216v72q0 17 3.5 20.5T240-168Zm-24 0v-96 96Z"/></svg> Boletos
                 </button>
                 <button className={`app-sidebar-item ${telaMeusDados === 'atendimentos' ? 'active' : ''}`} onClick={() => setTelaMeusDados('atendimentos')}>
                   <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="48 -912 864 864" width="18px" fill="#e06d13"><path d="M432-144v-72h312v-267q0-110-76.78-187.5t-187-77.5Q370-748 293-670.5T216-483v227h-48q-29.7 0-50.85-21.74Q96-299.48 96-330v-74q0-23 13-41t35-23l3-51q9-63 38-117.5t73.5-94.5q44.5-40 101.49-62.5 56.99-22.5 120-22.5t119.81 22.56q56.81 22.55 101.5 62.5Q746-691 775-637t38 117l3 52q21 5 34.5 21.5T864-408v84q0 22-13.5 38.5T816-264v48q0 29.7-21.15 50.85Q773.7-144 744-144H432Zm-85.5-274.29q-10.5-10.29-10.5-25.5t10.29-25.71q10.29-10.5 25.5-10.5t25.71 10.29q10.5 10.29 10.5 25.5t-10.29 25.71q-10.29 10.5-25.5 10.5t-25.71-10.29Zm216 0q-10.5-10.29-10.5-25.5t10.29-25.71q10.29-10.5 25.5-10.5t25.71 10.29q10.5 10.29 10.5 25.5t-10.29 25.71q-10.29 10.5-25.5 10.5t-25.71-10.29ZM265-458q-9-97 55.7-167.5T482-696q82 0 142.5 55T694-504q-85 0-154.5-46.5T432-672q-14 71-57.5 127.5T265-458Z"/></svg> Atendimentos
@@ -694,7 +705,7 @@ const FloatingWidget = () => {
                       </div>
 
                       {(() => {
-                        const servico = dashboard?.servicos?.[0] || clienteLogado?.servico_detalhes;
+                        const servico = servicoSelecionado;
                         const statusOriginal = servico?.status || 'Verificando...';
                         const statusLower = statusOriginal.toLowerCase();
 
@@ -723,22 +734,68 @@ const FloatingWidget = () => {
                       })()}
                     </div>
 
-                    {(() => {
-                      const servico = dashboard?.servicos?.find(s => s.endereco_instalacao) || dashboard?.servicos?.[0] || clienteLogado?.servico_detalhes || null;
-                      return (
-                        <div className="plan-card">
-                          <div className="plan-info">
-                            <h4>PLANO ATUAL</h4>
-                            <h2>{servico?.nome || 'Plano de Internet'}</h2>
-                            <p>{servico?.tecnologia ? `Tecnologia: ${servico.tecnologia}` : 'Internet de alta velocidade.'}</p>
-                            <div className="plan-price">
-                              {formatarMoeda(servico?.valor || 0)}<span>/mês</span>
-                            </div>
-                            <span style={{ fontSize: 12, color: '#0284c7', fontWeight: 600 }}>{servico?.status || 'Verificando status...'}</span>
-                          </div>
+                    <div className="section-card" style={{ marginBottom: 18 }}>
+                      <div className="section-header">
+                        <h3 className="section-title">Meus Serviços ({servicosExibidos.length})</h3>
+                      </div>
+                      {servicosExibidos.length === 0 ? (
+                        <p style={{ padding: '0 12px 16px', color: '#64748b' }}>Nenhum serviço foi localizado para este cadastro.</p>
+                      ) : (
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12, padding: '0 8px 14px' }}>
+                          {servicosExibidos.map((servico, index) => {
+                            const selecionado = String(servico.id_cliente_servico) === String(servicoSelecionado?.id_cliente_servico);
+                            const status = String(servico.status || 'Status não informado');
+                            const statusLower = status.toLowerCase();
+                            const corStatus = statusLower.includes('suspens') || statusLower.includes('bloque') ? '#dc2626' : statusLower.includes('cancel') || statusLower.includes('inativ') ? '#64748b' : '#16a34a';
+                            return (
+                              <button
+                                type="button"
+                                key={servico.id_cliente_servico || index}
+                                onClick={() => setServicoSelecionadoId(servico.id_cliente_servico ?? null)}
+                                aria-pressed={selecionado}
+                                style={{
+                                  textAlign: 'left', padding: 14, borderRadius: 10,
+                                  border: selecionado ? '2px solid #01A1DD' : '1px solid #e2e8f0',
+                                  background: selecionado ? '#f0f9ff' : '#fff', cursor: 'pointer',
+                                  boxShadow: selecionado ? '0 0 0 2px rgba(1,161,221,.08)' : 'none'
+                                }}
+                              >
+                                <span style={{ display: 'block', fontSize: 11, color: '#64748b', fontWeight: 700, marginBottom: 6 }}>
+                                  {servico.numero_plano ? `PLANO ${servico.numero_plano}` : `SERVIÇO ${index + 1}`}
+                                </span>
+                                <strong style={{ display: 'block', color: '#035270', fontSize: 15, marginBottom: 6 }}>
+                                  {servico.nome || servico.descricao || 'Plano de Internet'}
+                                </strong>
+                                <span style={{ display: 'block', color: '#334155', fontSize: 13, marginBottom: 8 }}>
+                                  {formatarMoeda(servico.valor || 0)} / mês
+                                </span>
+                                <span style={{ display: 'block', color: corStatus, fontSize: 12, fontWeight: 700 }}>{status}</span>
+                                <span style={{ display: 'block', color: '#64748b', fontSize: 11, marginTop: 8 }}>
+                                  {selecionado ? 'Serviço selecionado' : 'Clique para ver este serviço'}
+                                </span>
+                              </button>
+                            );
+                          })}
                         </div>
-                      );
-                    })()}
+                      )}
+                    </div>
+
+                    {servicoSelecionado && (
+                      <div className="plan-card">
+                        <div className="plan-info">
+                          <h4>SERVIÇO SELECIONADO</h4>
+                          <h2>{servicoSelecionado.nome || servicoSelecionado.descricao || 'Plano de Internet'}</h2>
+                          <p>{servicoSelecionado.tecnologia ? `Tecnologia: ${servicoSelecionado.tecnologia}` : 'Internet de alta velocidade.'}</p>
+                          <div className="plan-price">
+                            {formatarMoeda(servicoSelecionado.valor || 0)}<span>/mês</span>
+                          </div>
+                          <span style={{ fontSize: 12, color: '#0284c7', fontWeight: 600 }}>{servicoSelecionado.status || 'Verificando status...'}</span>
+                          {servicoSelecionado.id_cliente_servico && (
+                            <small style={{ display: 'block', marginTop: 8, color: '#64748b' }}>Código do serviço: {servicoSelecionado.id_cliente_servico}</small>
+                          )}
+                        </div>
+                      </div>
+                    )}
 
                     <div className="section-card">
                       <div className="section-header">
@@ -774,13 +831,11 @@ const FloatingWidget = () => {
                           <label>Endereço completo</label>
                           <span>
                             {(() => {
-                              const servicos = dashboard?.servicos ?? dashboard?.cliente?.servicos ?? [];
-                              const servicoComEndereco = servicos.find(s => s.endereco_instalacao || s.endereco) || servicos[0];
                               const enderecoBruto =
-                                dashboard?.endereco ||
-                                servicoComEndereco?.endereco_instalacao ||
-                                servicoComEndereco?.endereco_cadastral ||
-                                servicoComEndereco?.endereco;
+                                servicoSelecionado?.endereco_instalacao ||
+                                servicoSelecionado?.endereco_cadastral ||
+                                servicoSelecionado?.endereco ||
+                                dashboard?.endereco;
                               return formatarEndereco(enderecoBruto);
                             })()}
                           </span>
@@ -790,35 +845,25 @@ const FloatingWidget = () => {
 
                     {/* CARD DE DESBLOQUEIO EM CONFIANÇA */}
                     {(() => {
-                      const servico = dashboard?.servicos?.[0] || clienteLogado?.servico_detalhes;
+                      const servico = servicoSelecionado;
                       const statusOriginal = servico?.status || '';
                       const statusLower = statusOriginal.toLowerCase();
                       const estaSuspenso = statusLower.includes('suspenso') || statusLower.includes('bloqueado');
-                      const mesmoServico = !desbloqueioInfo?.id_cliente_servico || Number(desbloqueioInfo.id_cliente_servico) === Number(servico?.id_cliente_servico);
-                      const desbloqueioAtivo = Boolean(desbloqueioInfo?.ativo && mesmoServico && desbloqueioInfo?.data_termino);
 
-                      if (!estaSuspenso && !desbloqueioAtivo) return null;
+                      if (!estaSuspenso) return null;
 
                       return (
-                        <div className="section-card" style={{ borderLeft: `4px solid ${desbloqueioAtivo ? '#16a34a' : '#f59e0b'}`, background: desbloqueioAtivo ? '#f0fdf4' : '#fffbeb' }}>
+                        <div className="section-card" style={{ borderLeft: '4px solid #f59e0b', background: '#fffbeb' }}>
                           <div className="section-header">
-                            <h3 className="section-title" style={{ color: desbloqueioAtivo ? '#15803d' : '#b45309' }}>
+                            <h3 className="section-title" style={{ color: '#b45309' }}>
                               <FaLockOpen style={{ marginRight: 8 }} /> Desbloqueio em Confiança
                             </h3>
                           </div>
                           <div style={{ padding: '0 8px 16px' }}>
-                            {desbloqueioAtivo ? (
-                              <div style={{ color: '#166534', fontSize: 14, marginBottom: 16 }}>
-                                <strong>Desbloqueio ativo.</strong><br />
-                                Seu serviço está liberado até <strong>{desbloqueioInfo.data_termino_formatada || formatarData(desbloqueioInfo.data_termino)}</strong>.
-                                {desbloqueioInfo.protocolo_atendimento && (<> <br />Protocolo: <strong>{desbloqueioInfo.protocolo_atendimento}</strong></>)}
-                              </div>
-                            ) : (
-                              <p style={{ fontSize: 14, color: '#78350f', marginBottom: 16 }}>
-                                Seu serviço está suspenso por débito. Você pode solicitar um desbloqueio em confiança para voltar a navegar agora mesmo.
-                              </p>
-                            )}
-                            {!desbloqueioAtivo && <button
+                            <p style={{ fontSize: 14, color: '#78350f', marginBottom: 16 }}>
+                              Seu serviço está suspenso por débito. Você pode solicitar um desbloqueio em confiança para voltar a navegar agora mesmo.
+                            </p>
+                            <button
                               onClick={() => handleDesbloqueioConfianca(servico?.id_cliente_servico)}
                               disabled={desbloqueioLoading}
                               className="btn-block"
@@ -839,17 +884,17 @@ const FloatingWidget = () => {
                             >
                               {desbloqueioLoading ? 'Processando...' : (
                                 <>
-                                  <FaLockOpen /> Desbloquear por 3 dias
+                                  <FaLockOpen /> Desbloquear por 1 dia
                                 </>
                               )}
-                            </button>}
+                            </button>
                           </div>
                         </div>
                       );
                     })()}
 
                     {(() => {
-                      const servico = dashboard?.servicos?.[0] || clienteLogado?.servico_detalhes;
+                      const servico = servicoSelecionado;
                       const statusOriginal = servico?.status || '';
                       const statusLower = statusOriginal.toLowerCase();
                       const temFaturaVencida = boletos?.totalVencidas > 0;

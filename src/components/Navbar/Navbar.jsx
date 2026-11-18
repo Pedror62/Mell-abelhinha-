@@ -31,7 +31,7 @@ export const Navbar = () => {
 
   const handleOpenWhatsApp = () => {
     setShowContatoMenu(false);
-    window.open('https://wa.me/5538999999999', '_blank');
+    window.open('https://wa.me/553808000389004', '_blank');
   };
 
   return (

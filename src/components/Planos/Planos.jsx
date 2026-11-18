@@ -3,43 +3,50 @@ import './Planos.css';
 
 // ============================================================
 // IMPORTAÇÃO DAS IMAGENS LOCAIS
-// Verifique se o caminho '../../assets/' está correto para o seu projeto
 // ============================================================
 import imgContaOutraVez from '../../assets/ConteOutraVez.png';
 import imgContaOutraVezMini from '../../assets/conteOutraVezMini.png';
+import imgOleTV from '../../assets/oletv.png';
+// import imgWifi6 from '../../assets/icon_wifi6.png'; // ❌ REMOVIDO (não estava na pasta)
+import imgClube from '../../assets/icon_clube.png';
+import imgDeezer from '../../assets/dezzer.png';
+import imgQualifica from '../../assets/Qualifica.png'; // ❌ REMOVIDO (pode estar com outro nome)
+import imgMaquinaContos from '../../assets/maquinadecontos.png';
+import imgEbookStandard from '../../assets/Standard_Ebooks_logo.png';
+import imgWatchBrasil from '../../assets/WatchBrasil.png'; 
 
 // ============================================================
-// URLs EXATAS DO SEU HTML
+// SVGs SUBSTITUTOS
 // ============================================================
-const URL_OLE_TV = "https://mell.mellinternet.com.br/assets/oletv-Cu9M-Sud.png";
-const URL_WIFI_6 = "https://mell.mellinternet.com.br/assets/icon_wifi6-BGyyQu84.png";
-const URL_CLUBE = "https://mell.mellinternet.com.br/assets/icon_clube-CrbZK86s.png";
-const URL_DEEZER = "https://mell.mellinternet.com.br/assets/dezzer-B2UZ-nJH.png";
-const URL_EBOOK_LIGHT = "https://mell.mellinternet.com.br/assets/qualifica-DKOr7Mv4.png";
-const URL_MAQUINA_CONTOS = "https://mell.mellinternet.com.br/assets/maquinadecontos-SrM0Gdwd.png";
-const URL_EBOOK_STANDARD = "https://mell.mellinternet.com.br/assets/Standard_Ebooks_logo-Con_1oWW.png";
-
-// Base64 do Watch Brasil (Fornecido no HTML)
-const BASE64_WATCH_BRASIL = "data:image/png;base64,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";
-
-// SVG do Chip 35 GB (Fornecido no HTML)
 const SVG_CHIP_35GB = (
   <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="#e06d13" className="servico-icon-svg small">
     <path d="M312-240h72v-72h-72v72Zm0-144h72v-144h-72v144Zm132 144h72v-144h-72v144Zm0-216h72v-72h-72v72Zm132 216h72v-72h-72v72Zm0-144h72v-144h-72v144ZM263.72-96Q234-96 213-117.15T192-168v-504l192-192h312q29.7 0 50.85 21.15Q768-821.7 768-792v624q0 29.7-21.16 50.85Q725.68-96 695.96-96H263.72Zm.28-72h432v-624H414L264-642v474Zm0 0h432-432Z"></path>
   </svg>
 );
 
-// Ícone de roteador — usado em Roteador e Segundo Roteador
 const SVG_ROTEADOR = (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="1 1 18 18" height="18px" width="18px" fill="#e06d13" className="servico-icon-svg small">
     <path d="M4.5,17q-0.62,0-1.06-0.44T3,15.5v-3q0-0.62 0.44-1.06T4.5,11h8V8H14v3h1.5q0.64 0 1.09,0.44T17,12.5v3q-0.04,0.6-0.47,1.05T15.5,17H4.5Zm0-1.5h11v-3H4.5v3Zm2.28-0.96Q7,14.32 7,14T6.79,13.47T6.25,13.25T5.72,13.46T5.5,14t0.21,0.54t0.53,0.22t0.54-0.21Zm2.75,0Q9.75,14.32 9.75,14T9.54,13.47T9,13.25T8.47,13.46T8.25,14t0.21,0.54T9,14.75t0.54-0.21Zm2.75,0Q12.5,14.32 12.5,14t-0.21-0.54t-0.53-0.22t-0.54,0.21T11,14t0.21,0.54t0.53,0.22t0.54-0.21ZM12.1,6.85L11.04,5.79q0.44-0.42 1.02-0.6T13.25,5t1.19,0.19t1.02,0.6L14.4,6.85q-0.23-0.23-0.53-0.29T13.25,6.5T12.64,6.56T12.1,6.85ZM10,4.75L8.92,3.67Q9.77,2.79 10.91,2.4T13.25,2t2.34,0.4t1.99,1.27L16.5,4.75Q15.85,4.1 15.01,3.8T13.25,3.5T11.49,3.8T10,4.75ZM4.5,15.5v-3v3Z"/>
   </svg>
 );
 
-// Ícone de câmera externa — usado em Câmera Wi-Fi Externa Fixa e Câmera Wi-Fi Externa
 const SVG_CAMERA_EXTERNA = (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="1 1 18 18" height="18px" width="18px" fill="#e06d13" className="servico-icon-svg small">
     <path d="M11.38,16.15Q11.1,16.47 10.7,16.5T9.96,16.25L7.29,13.98Q6.33,13.17 5.9,12.01T5.69,9.63L4.77,8.92Q4.5,8.71 4.44,8.38T4.5,7.75h-1V9.5q0,0.62-0.44,1.06T2,11V3Q2.63,3 3.06,3.44T3.5,4.5V6.25H5.71l1.21-1.4q0.27-0.3 0.66-0.34T8.29,4.75L9.15,5.46q1.19-0.42 2.43-0.22t2.18,0.99l2.79,2.33q0.31,0.27 0.36,0.68T16.67,9.98l-5.29,6.17Zm-0.83-1.35l4.65-5.4l-2.42-2q-0.79-0.67-1.85-0.73T8.85,7.17L7.73,6.21L6.13,8.06L7.31,9q-0.35,1.15-0.1,2.16t1.03,1.68l2.3,1.95Zm0.1-4.29Z"/>
+  </svg>
+);
+
+// SVG para o Wi-Fi 6 (já que a imagem foi removida)
+const SVG_WIFI_6 = (
+  <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="#e06d13" className="servico-icon-svg small">
+    <path d="M480-120q-42 0-71-29t-29-71q0-42 29-71t71-29q42 0 71 29t29 71q0 42-29 71t-71 29ZM254-334l-56-56q56-56 128-84t154-28q82 0 154 28t128 84l-56 56q-45-45-104.5-66.5T480-422q-69 0-128.5 21.5T254-334ZM140-448l-56-56q82-82 178-119t218-37q122 0 218 37t178 119l-56 56q-72-72-156-104t-184-32q-100 0-184 32T140-448Z"/>
+  </svg>
+);
+
+// SVG para Qualifica (já que a imagem foi removida)
+const SVG_LIVROS = (
+  <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="#e06d13" className="servico-icon-svg small">
+    <path d="M480-120q-126 0-213-87t-87-213q0-126 87-213t213-87q126 0 213 87t87 213q0 126-87 213t-213 87Zm0-80q88 0 150-62t62-150q0-88-62-150t-150-62q-88 0-150 62t-62 150q0 88 62 150t150 62Zm-40-200h80v-240h-80v240Zm40 80q17 0 28.5-11.5T520-360q0-17-11.5-28.5T480-400q-17 0-28.5 11.5T440-360q0 17 11.5 28.5T480-320Z"/>
   </svg>
 );
 
@@ -54,20 +61,16 @@ const getServicoIcon = (nome, emoji, size = 'default') => {
   }
 
   switch (nome) {
-    case 'Olé TV': return <img src={URL_OLE_TV} alt={nome} className={`servico-icon-img ${size}`} />;
-    case 'Wi-Fi 6': return <img src={URL_WIFI_6} alt={nome} className={`servico-icon-img ${size}`} />;
-    case 'Clube': return <img src={URL_CLUBE} alt={nome} className={`servico-icon-img ${size}`} />;
-    case 'Deezer': return <img src={URL_DEEZER} alt={nome} className={`servico-icon-img ${size}`} />;
-    case 'Qualifica': return <img src={URL_EBOOK_LIGHT} alt={nome} className={`servico-icon-img ${size}`} />;
-    case 'Máquina de Contos': return <img src={URL_MAQUINA_CONTOS} alt={nome} className={`servico-icon-img ${size}`} />;
-    case 'Ebook Standard': return <img src={URL_EBOOK_STANDARD} alt={nome} className={`servico-icon-img ${size}`} />;
-    case 'Watch Brasil': return <img src={BASE64_WATCH_BRASIL} alt={nome} className={`servico-icon-img ${size}`} />;
-    
-    // 👇 AQUI ESTÃO AS CORREÇÕES DAS IMAGENS LOCAIS 👇
+    case 'Olé TV': return <img src={imgOleTV} alt={nome} className={`servico-icon-img ${size}`} />;
+    case 'Wi-Fi 6': return SVG_WIFI_6; // ✅ Substituído por SVG
+    case 'Clube': return <img src={imgClube} alt={nome} className={`servico-icon-img ${size}`} />;
+    case 'Deezer': return <img src={imgDeezer} alt={nome} className={`servico-icon-img ${size}`} />;
+   case 'Qualifica': return <img src={imgQualifica} alt={nome} className={`servico-icon-img ${size}`} />;
+    case 'Máquina de Contos': return <img src={imgMaquinaContos} alt={nome} className={`servico-icon-img ${size}`} />;
+    case 'Ebook Standard': return <img src={imgEbookStandard} alt={nome} className={`servico-icon-img ${size}`} />;
+    case 'Watch Brasil': return <img src={imgWatchBrasil} alt={nome} className={`servico-icon-img ${size}`} />;
     case 'Conta Outra Vez': return <img src={imgContaOutraVez} alt={nome} className={`servico-icon-img ${size}`} />;
     case 'Mini Conta Outra Vez': return <img src={imgContaOutraVezMini} alt={nome} className={`servico-icon-img ${size}`} />;
-    // 👆 FIM DAS CORREÇÕES 👆
-    
     default: return <span className={`servico-icon-emoji ${size}`}>{emoji}</span>;
   }
 };
@@ -91,11 +94,10 @@ const PLANOS_DATA = [
       { id: 'chip_35gb', nome: 'Chip 35 GB', preco: 30.00, icon: '📱', descricao: 'Chip de dados móveis com 35GB de franquia' },
       { id: 'deezer', nome: 'Deezer', preco: 10.00, icon: '🎵', descricao: 'Streaming de música com milhões de faixas' },
       { id: 'watch_brasil', nome: 'Watch Brasil', preco: 12.90, icon: '⌚', descricao: 'Streaming de conteúdos brasileiros exclusivos' },
-      { id: 'ebook_light', nome: 'qualifica', preco: 12.90, icon: '📚', descricao: 'Biblioteca digital leve com os melhores títulos' },
+      { id: 'ebook_light', nome: 'Qualifica', preco: 12.90, icon: '📚', descricao: 'Biblioteca digital leve com os melhores títulos' },
       { id: 'conta_outra_vez', nome: 'Conta Outra Vez', preco: 19.90, icon: '📺', descricao: 'Serviço de streaming com conteúdo exclusivo' },
       { id: 'maquina_contos', nome: 'Máquina de Contos', preco: 19.90, icon: '📖', descricao: 'Histórias infantis interativas e educativas' },
       { id: 'ebook_standard', nome: 'Ebook Standard', preco: 11.90, icon: '📚', descricao: 'Biblioteca digital com milhares de títulos' },
-      
       { id: 'mini_conta_outra_vez', nome: 'Mini Conta Outra Vez', preco: 14.90, icon: '📺', descricao: 'Versão compacta do serviço de streaming' },
       { id: 'camera_interna', nome: 'Câmera Wi-Fi Interna', preco: 20.00, icon: '📹', descricao: 'Câmera de segurança interna com visão noturna' }
     ]
@@ -118,7 +120,6 @@ const PLANOS_DATA = [
       { id: 'deezer', nome: 'Deezer', preco: 10.00, icon: '🎵', descricao: 'Streaming de música com milhões de faixas' },
       { id: 'camera_interna', nome: 'Câmera Wi-Fi Interna', preco: 20.00, icon: '📹', descricao: 'Câmera de segurança interna com visão noturna' },
       { id: 'chip_35gb', nome: 'Chip 35 GB', preco: 30.00, icon: '📱', descricao: 'Chip de dados móveis com 35GB de franquia' },
-      
       { id: 'maquina_contos', nome: 'Máquina de Contos', preco: 19.90, icon: '📖', descricao: 'Histórias infantis interativas e educativas' },
       { id: 'ebook_standard', nome: 'Ebook Standard', preco: 11.90, icon: '📚', descricao: 'Biblioteca digital com milhares de títulos' },
       { id: 'ebook_light', nome: 'Qualifica', preco: 12.90, icon: '📚', descricao: 'Biblioteca digital leve com os melhores títulos' },
@@ -127,9 +128,7 @@ const PLANOS_DATA = [
       { id: 'roteador', nome: 'Roteador', preco: 15.00, icon: '📡', descricao: 'Roteador Wi-Fi de alta performance' },
       { id: 'segundo_roteador', nome: 'Segundo Roteador', preco: 15.00, icon: '📡', descricao: 'Roteador adicional para expandir a cobertura' },
       { id: 'cartao_memoria', nome: 'Cartão Memória 32GB', preco: 5.99, icon: '💾', descricao: 'Cartão de memória para câmeras e dispositivos' },
-      
       { id: 'conta_outra_vez', nome: 'Conta Outra Vez', preco: 19.90, icon: '📺', descricao: 'Serviço de streaming com conteúdo exclusivo' },
-      
       { id: 'camera_externa_fixa', nome: 'Câmera Wi-Fi Externa Fixa', preco: 24.90, icon: '📹', descricao: 'Câmera de segurança externa fixa com alta resolução' },
       { id: 'camera_externa', nome: 'Câmera Wi-Fi Externa', preco: 29.90, icon: '📹', descricao: 'Câmera de segurança externa com visão 360°' }
     ]
@@ -266,7 +265,7 @@ export const Planos = () => {
               </div>
 
               <div className="fidelidade-bar">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="1 1 18 18" height="18px" width="18px" fill="#e06d13"><path d="M3.5,14.5q0-0.13 0-0.25T3.5,14q0-2.3 0-3.9t0-1.6t0,0.06t0,0.15V5.5v9Zm11.54,2.25L12.3,14q-0.25-0.25-0.36-0.55t-0.1-0.58q0-0.62 0.44-1.12t1.16-0.5q0.56 0 0.88,0.26q0.32,0.26 0.74,0.68q0.4-0.4 0.71-0.67t0.89-0.27q0.74 0 1.17,0.5t0.44,1.12q0,0.29-0.11,0.59T17.79,14l-2.75,2.75ZM3.5,7h13V5.5H3.5V7Zm6.35,9H3.5q-0.6,0-1.05-0.45T2,14.5v-9Q2,4.9 2.45,4.45T3.5,4h13q0.62,0 1.06,0.45T18,5.5V9.4q-0.67-0.42-1.42-0.66T14.98,8.5q-1.1,0-2.07,0.4T11.21,10H3.5v4.5h6q0.04,0.39 0.13,0.77T9.85,16Z"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="1 1 18 18" height="18px" width="18px" fill="#e06d13"><path d="M3.5,14.5q0-0.13 0-0.25T3.5,14q0-2.3 0-3.9t0-1.6t0,0.06t0,0.15V5.5v9Zm11.54,2.25L12.3,14q-0.25-0.25-0.36-0.55t-0.1-0.58q0-0.62 0.44-1.12t1.16-0.5q0.56 0 0.88,0.26q0.32,0.26 0.74,0.68q0.4-0.4 0.71-0.67t0.89-0.27q0.74 0 1.17,0.5t0.44,1.12q0,0.29-0.11,0.59T17.79,14l-2.75,2.75ZM3.5,7h13V5.5H3.5V7Zm6.35,9H3.5q-0.6,0-1.05-0.45T2,14.5v-9Q2,4.9 2.45,4.45T3.5,4h13q0.62,0 1.06,0.45T18,5.5V9.4q-0.67-0.42-1.42-0.66T14.98,8.5q-1.1,0-2.07 0.4T11.21,10H3.5v4.5h6q0.04,0.39 0.13,0.77T9.85,16Z"/></svg>
                 <span>12 meses de fidelidade</span>
               </div>
 
